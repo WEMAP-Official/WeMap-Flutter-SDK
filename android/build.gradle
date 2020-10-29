@@ -1,0 +1,57 @@
+group 'com.wemap.wemapgl'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+        
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.3'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'com.android.library'
+// apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 28
+
+    sourceSets {
+        main.java.srcDirs = ['src/main/java']
+        // main.kotlin.srcDirs = ['src/main/kotlin']
+        //main.java.srcDirs += 'src/main/kotlin'
+    }
+    defaultConfig {
+        minSdkVersion 16
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+}
+
+dependencies {
+    implementation "com.mapbox.mapboxsdk:mapbox-android-sdk:8.5.0"	
+    implementation "com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v8:0.7.0"
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-localization-v8:0.11.0'
+}
