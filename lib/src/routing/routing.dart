@@ -402,7 +402,7 @@ class WeMapDirectionState extends State<WeMapDirection> {
             myLocationEnabled: myLatLngEnabled,
             compassEnabled: true,
             compassViewMargins: Point(24, 550),
-            onMapClick: (point, latlng, place) async {},
+            onMapClick: (point, latlng) async {},
           ),
           Positioned(
             key: mapKey,

@@ -43,6 +43,13 @@ class ArgumentCallbacks<T> {
     _callbacks.remove(callback);
   }
 
+  /// Removes all callback from this collection.
+  ///
+  /// Does nothing, if the callback was not present.
+  void removeAll() {
+    _callbacks.clear();
+  }
+
   /// Whether this collection is empty.
   bool get isEmpty => _callbacks.isEmpty;
 

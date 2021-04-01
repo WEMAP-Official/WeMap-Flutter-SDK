@@ -4,8 +4,8 @@
 
 part of wemapgl;
 
-typedef void OnMapClickCallback(Point<double> point, LatLng coordinates, WeMapPlace place);
-typedef void OnMapLongClickCallback(Point<double> point, LatLng coordinates, WeMapPlace place);
+typedef void OnMapClickCallback(Point<double> point, LatLng coordinates);
+typedef void OnMapLongClickCallback(Point<double> point, LatLng coordinates);
 
 typedef void OnStyleLoadedCallback();
 
@@ -50,9 +50,7 @@ class WeMapController extends ChangeNotifier {
       : assert(_id != null) {
     _cameraPosition = initialCameraPosition;
 
-    WeMapGlPlatform.getInstance(_id)
-        .onInfoWindowTappedPlatform
-        .add((symbolId) {
+    WeMapGlPlatform.getInstance(_id).onInfoWindowTappedPlatform.add((symbolId) {
       final Symbol symbol = _symbols[symbolId];
       if (symbol != null) {
         onInfoWindowTapped(symbol);
@@ -92,9 +90,7 @@ class WeMapController extends ChangeNotifier {
       notifyListeners();
     });
 
-    WeMapGlPlatform.getInstance(_id)
-        .onCameraMovePlatform
-        .add((cameraPosition) {
+    WeMapGlPlatform.getInstance(_id).onCameraMovePlatform.add((cameraPosition) {
       _cameraPosition = cameraPosition;
       notifyListeners();
     });
@@ -115,17 +111,17 @@ class WeMapController extends ChangeNotifier {
 
     WeMapGlPlatform.getInstance(_id).onMapClickPlatform.add((dict) async {
       if (onMapClick != null) {
-        await getPlace(dict['latLng']).then((place) async {
-          await getExtraTag(place.placeId).then((extratags) {
-            if (extratags != null) {
-              place.setExtraTags(extratags);
-            } else {
-              place.setExtraTags({});
-            }
-            
-            onMapClick(dict['point'], dict['latLng'], place);
-          });
-        });
+        onMapClick(dict['point'], dict['latLng']);
+        // await getPlace(dict['latLng']).then((place) async {
+        //   await getExtraTag(place.placeId).then((extratags) {
+        //     if (extratags != null) {
+        //       place.setExtraTags(extratags);
+        //     } else {
+        //       place.setExtraTags({});
+        //     }
+
+        //   });
+        // });
       }
     });
 
@@ -138,7 +134,7 @@ class WeMapController extends ChangeNotifier {
             } else {
               place.setExtraTags({});
             }
-            onMapLongClick(dict['point'], dict['latLng'], place);
+            onMapLongClick(dict['point'], dict['latLng']);
           });
         });
       }
@@ -152,9 +148,7 @@ class WeMapController extends ChangeNotifier {
       }
     });
 
-    WeMapGlPlatform.getInstance(_id)
-        .onCameraTrackingDismissedPlatform
-        .add((_) {
+    WeMapGlPlatform.getInstance(_id).onCameraTrackingDismissedPlatform.add((_) {
       if (onCameraTrackingDismissed != null) {
         onCameraTrackingDismissed();
       }
@@ -165,7 +159,9 @@ class WeMapController extends ChangeNotifier {
         onMapIdle();
       }
     });
-    WeMapGlPlatform.getInstance(_id).onUserLocationUpdatedPlatform.add((location) { 
+    WeMapGlPlatform.getInstance(_id)
+        .onUserLocationUpdatedPlatform
+        .add((location) {
       onUserLocationUpdated?.call(location);
     });
   }
@@ -203,7 +199,7 @@ class WeMapController extends ChangeNotifier {
   final ShowPlaceCard showPlaceCard;
 
   final bool reverse;
-  
+
   final OnStyleLoadedCallback onStyleLoadedCallback;
 
   final OnMapClickCallback onMapClick;
@@ -257,6 +253,8 @@ class WeMapController extends ChangeNotifier {
   /// The returned set will be a detached snapshot of the fills collection.
   Set<Fill> get fills => Set<Fill>.from(_fills.values);
   final Map<String, Fill> _fills = <String, Fill>{};
+  Set<Map<String, Fill>> get getFills =>
+      Set<Map<String, Fill>>.from(_fills.values);
 
   /// True if the map camera is currently moving.
   bool get isCameraMoving => _isCameraMoving;
@@ -302,7 +300,8 @@ class WeMapController extends ChangeNotifier {
   }
 
   Future<bool> addWMSLayer(String layerID, String wmsURL, int tileSize) async {
-    return WeMapGlPlatform.getInstance(_id).addWMSLayer(layerID, wmsURL, tileSize);
+    return WeMapGlPlatform.getInstance(_id)
+        .addWMSLayer(layerID, wmsURL, tileSize);
   }
 
   Future<bool> removeWMSLayer(String layerID) async {
@@ -351,8 +350,7 @@ class WeMapController extends ChangeNotifier {
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
   Future<void> matchMapLanguageWithDeviceDefault() async {
-    return WeMapGlPlatform.getInstance(_id)
-        .matchMapLanguageWithDeviceDefault();
+    return WeMapGlPlatform.getInstance(_id).matchMapLanguageWithDeviceDefault();
   }
 
   /// Updates the distance from the edges of the map view’s frame to the edges
@@ -676,7 +674,8 @@ class WeMapController extends ChangeNotifier {
   Future<Fill> addFill(FillOptions options, [Map data]) async {
     final FillOptions effectiveOptions =
         FillOptions.defaultOptions.copyWith(options);
-    final fill = await WeMapGlPlatform.getInstance(_id).addFill(effectiveOptions);
+    final fill =
+        await WeMapGlPlatform.getInstance(_id).addFill(effectiveOptions, data);
     _fills[fill.id] = fill;
     notifyListeners();
     return fill;
@@ -686,6 +685,11 @@ class WeMapController extends ChangeNotifier {
     List<dynamic> _id = await options.addToMap(this);
     notifyListeners();
     return _id;
+  }
+
+  void removeGeoJSONPOINTS(Iterable<String> _ids) {
+    _removeSymbols(_ids);
+    notifyListeners();
   }
 
   /// Updates the specified [fill] with the given [changes]. The fill must
@@ -803,8 +807,7 @@ class WeMapController extends ChangeNotifier {
 
   /// For more information on what this does, see https://docs.mapbox.com/help/troubleshooting/optimize-map-label-placement/#label-collision
   Future<void> setSymbolIconIgnorePlacement(bool enable) async {
-    await WeMapGlPlatform.getInstance(_id)
-        .setSymbolIconIgnorePlacement(enable);
+    await WeMapGlPlatform.getInstance(_id).setSymbolIconIgnorePlacement(enable);
   }
 
   /// For more information on what this does, see https://docs.mapbox.com/help/troubleshooting/optimize-map-label-placement/#label-collision
@@ -814,12 +817,12 @@ class WeMapController extends ChangeNotifier {
 
   /// For more information on what this does, see https://docs.mapbox.com/help/troubleshooting/optimize-map-label-placement/#label-collision
   Future<void> setSymbolTextIgnorePlacement(bool enable) async {
-    await WeMapGlPlatform.getInstance(_id)
-        .setSymbolTextIgnorePlacement(enable);
+    await WeMapGlPlatform.getInstance(_id).setSymbolTextIgnorePlacement(enable);
   }
 
   /// Adds an image source to the style currently displayed in the map, so that it can later be referred to by the provided name.
-  Future<void> addImageSource(String name, Uint8List bytes, LatLngQuad coordinates) {
+  Future<void> addImageSource(
+      String name, Uint8List bytes, LatLngQuad coordinates) {
     return WeMapGlPlatform.getInstance(_id)
         .addImageSource(name, bytes, coordinates);
   }
@@ -856,8 +859,9 @@ class WeMapController extends ChangeNotifier {
 
   /// Returns the distance spanned by one pixel at the specified [latitude] and current zoom level.
   /// The distance between pixels decreases as the latitude approaches the poles. This relationship parallels the relationship between longitudinal coordinates at different latitudes.
-  Future<double> getMetersPerPixelAtLatitude(double latitude) async{
-    return WeMapGlPlatform.getInstance(_id).getMetersPerPixelAtLatitude(latitude);
+  Future<double> getMetersPerPixelAtLatitude(double latitude) async {
+    return WeMapGlPlatform.getInstance(_id)
+        .getMetersPerPixelAtLatitude(latitude);
   }
 
   Future<WeMapPlace> _getPlace(LatLng latLng) async {

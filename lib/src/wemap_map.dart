@@ -224,9 +224,9 @@ class _WeMapState extends State<WeMap> {
       id,
       widget.initialCameraPosition,
       onStyleLoadedCallback: () {
-        if (_controller.isCompleted) {
+        if (_controller !=null && _controller.isCompleted) {
           widget.onStyleLoadedCallback();
-        } else {
+        } else if (_controller != null){
           _controller.future.then((_) => widget.onStyleLoadedCallback());
         }
       },
