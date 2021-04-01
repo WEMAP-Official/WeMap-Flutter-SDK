@@ -40,8 +40,8 @@ class FullMapState extends State<FullMap> {
       body: Stack(
         children: <Widget>[
           WeMap(
-            onMapClick: (point, latlng, _place) async {
-              place = await _place;
+            onMapClick: (point, latlng) async {
+              // place = await _place;
             },
             onPlaceCardClose: () {
               // print("Place Card closed");

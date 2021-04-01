@@ -283,7 +283,7 @@ class MapUiBodyState extends State<MapUiBody> {
         myLocationEnabled: _myLocationEnabled,
         myLocationTrackingMode: _myLocationTrackingMode,
         myLocationRenderMode: MyLocationRenderMode.GPS,
-        onMapClick: (point, latlng, place) {},
+        onMapClick: (point, latlng) {},
         onCameraTrackingDismissed: () {
           this.setState(() {
             _myLocationTrackingMode = MyLocationTrackingMode.None;

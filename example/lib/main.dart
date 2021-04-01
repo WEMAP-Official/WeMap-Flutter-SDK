@@ -67,6 +67,6 @@ class MapsDemo extends StatelessWidget {
 }
 
 void main() {
-  WEMAP.Configuration.setWeMapKey('YOUR_WEMAP_API_KEY');
+  WEMAP.Configuration.setWeMapKey('IqzJukzUWpWrcDHJeDpUPLSGndDx');
   runApp(MaterialApp(home: MapsDemo()));
 }
