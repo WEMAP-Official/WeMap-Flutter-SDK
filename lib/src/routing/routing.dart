@@ -17,7 +17,7 @@ int _tripDistance = 0;
 
 class WeMapDirections {
   Future<dynamic> getResponse(int indexOfTab, String from, String to) async {
-    String url;
+    Uri url;
     switch (indexOfTab) {
       case 0:
         url = apiDirection(from, to, 'car');
@@ -38,16 +38,17 @@ class WeMapDirections {
     return json;
   }
 
-  Future<dynamic> getResponseMultiRoute(int indexOfTab, List<LatLng> points) async {
-    if(points.length >= 2){
-      String url;
+  Future<dynamic> getResponseMultiRoute(
+      int indexOfTab, List<LatLng> points) async {
+    if (points.length >= 2) {
+      Uri url;
       switch (indexOfTab) {
         case 0:
           url = apiDirectionMultiPoint(points, 'car');
           break;
-  //      case 1:
-  //        url = apiDirection(from, to, 'motorcycle');
-  //        break;
+        //      case 1:
+        //        url = apiDirection(from, to, 'motorcycle');
+        //        break;
         case 1:
           url = apiDirectionMultiPoint(points, 'bike');
           break;
@@ -306,7 +307,9 @@ class WeMapDirectionState extends State<WeMapDirection> {
     if (myLatLng == null && mapController != null)
       myLatLng = await mapController.requestMyLocationLatLng();
     fromHomeStream.increment(false);
-    if ((widget.originPlace == null && _chooseKey.currentState != null && _chooseKey.currentState.ori != null) ||
+    if ((widget.originPlace == null &&
+            _chooseKey.currentState != null &&
+            _chooseKey.currentState.ori != null) ||
         (widget.originPlace != null && _chooseKey.currentState.ori != null)) {
       widget.originPlace = new WeMapPlace(
           location: _chooseKey.currentState.ori,
@@ -315,7 +318,8 @@ class WeMapDirectionState extends State<WeMapDirection> {
       widget.originPlace.location = _chooseKey.currentState.ori;
     }
     if ((widget.destinationPlace == null &&
-            _chooseKey.currentState != null && _chooseKey.currentState.des != null) ||
+            _chooseKey.currentState != null &&
+            _chooseKey.currentState.des != null) ||
         (widget.destinationPlace != null &&
             _chooseKey.currentState.des != null)) {
       widget.destinationPlace = new WeMapPlace(
@@ -362,8 +366,8 @@ class WeMapDirectionState extends State<WeMapDirection> {
       mapController.clearLines();
       mapController.clearCircles();
 //      await WeMapDirections().addMarker(widget.originPlace.location, mapController, widget.originIcon);
-      await WeMapDirections().loadRoute(mapController, _route, insRoute, rootPreview,
-          visible, indexOfTab, from, to);
+      await WeMapDirections().loadRoute(mapController, _route, insRoute,
+          rootPreview, visible, indexOfTab, from, to);
       mapController.clearSymbols();
       await WeMapDirections().addMarker(widget.destinationPlace.location,
           mapController, widget.destinationIcon);

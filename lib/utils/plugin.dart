@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:wemapgl/wemapgl.dart';
 import 'language_vi.dart';
@@ -9,67 +8,73 @@ String key = 'key=${Configuration.weMapKey}';
 Color primaryColor = Color.fromRGBO(0, 113, 188, 1);
 
 ///Direction
-String apiDirection(String from, String to, String type) =>
-    "https://apis.wemap.asia/route-api/route?point=$from&point=$to&type=json&locale=vi&vehicle=$type&weighting=fastest&points_encoded=false&elevation=false&$key";
+Uri apiDirection(String from, String to, String type) => Uri.parse(
+    "https://apis.wemap.asia/route-api/route?point=$from&point=$to&type=json&locale=vi&vehicle=$type&weighting=fastest&points_encoded=false&elevation=false&$key");
 
-    
-String apiDirectionMultiPoint(List<LatLng> points, String type){
+Uri apiDirectionMultiPoint(List<LatLng> points, String type) {
   List<String> pointsStrings = [];
-  for(int i=0; i< points.length; i++){
-    pointsStrings.add(points[i].latitude.toString()+","+points[i].longitude.toString());
+  for (int i = 0; i < points.length; i++) {
+    pointsStrings.add(
+        points[i].latitude.toString() + "," + points[i].longitude.toString());
   }
   String ps = pointsStrings.join("&point=");
-  return "https://apis.wemap.asia/route-api/route?point=$ps&type=json&locale=vi&vehicle=$type&weighting=fastest&points_encoded=false&elevation=false&$key";
+  return Uri.parse("https://apis.wemap.asia/route-api/route?point=$ps&type=json&locale=vi&vehicle=$type&weighting=fastest&points_encoded=false&elevation=false&$key");
 }
-    
 
 ///Voice
-String apiVoice(String string) => "https://vmap.vn/voice?address=$string";
+Uri apiVoice(String string) => Uri.parse("https://vmap.vn/voice?address=$string");
 
 ///Search SDK
-String apiSearch(String input, LatLng latLng, WeMapGeocoder geocoder) {
+Uri apiSearch(String input, LatLng latLng, WeMapGeocoder geocoder) {
   Configuration.validateWeMapKey();
   switch (geocoder) {
     case WeMapGeocoder.Nominatim:
-      return "https://apis.wemap.asia/geocode-2/search.php?q=$input&lat=${latLng.latitude}&lon=${latLng.longitude}&location_bias_scale=2&polygon_geojson=1&format=geojson&$key";
+      return Uri.parse(
+          "https://apis.wemap.asia/geocode-2/search.php?q=$input&lat=${latLng.latitude}&lon=${latLng.longitude}&location_bias_scale=2&polygon_geojson=1&format=geojson&$key");
       break;
     case WeMapGeocoder.Photon:
-      return 'https://apis.wemap.asia/geocode-3/api?q=$input&lat=${latLng.latitude}&lon=${latLng.longitude}&location_bias_scale=2&$key';
+      return Uri.parse(
+          'https://apis.wemap.asia/geocode-3/api?q=$input&lat=${latLng.latitude}&lon=${latLng.longitude}&location_bias_scale=2&$key');
       break;
     default:
-      return 'https://apis.wemap.asia/geocode-1/autocomplete?text=$input&focus.point.lat=${latLng.latitude}&focus.point.lon=${latLng.longitude}&location_bias_scale=2&$key';
+      return Uri.parse(
+          'https://apis.wemap.asia/geocode-1/autocomplete?text=$input&focus.point.lat=${latLng.latitude}&focus.point.lon=${latLng.longitude}&location_bias_scale=2&$key');
       break;
   }
 }
 
 ///Reverse
-String apiReverse(LatLng latLng) {
+Uri apiReverse(LatLng latLng) {
   Configuration.validateWeMapKey();
-  return "https://apis.wemap.asia/geocode-1/reverse?point.lat=${latLng.latitude}&point.lon=${latLng.longitude}&$key";
+  return Uri.parse(
+      "https://apis.wemap.asia/geocode-1/reverse?point.lat=${latLng.latitude}&point.lon=${latLng.longitude}&$key");
 }
 
 ///Locality
-String apiLocality(LatLng latLng) => "https://apis.wemap.asia/geocode-1/reverse?point.lat=${latLng.latitude}&point.lon=${latLng.longitude}&$key&layers=locality";
+Uri apiLocality(LatLng latLng) => Uri.parse(
+    "https://apis.wemap.asia/geocode-1/reverse?point.lat=${latLng.latitude}&point.lon=${latLng.longitude}&$key&layers=locality");
 
 ///Lookup SDK
-String apiLookup(int osmID) {
+Uri apiLookup(int osmID) {
   Configuration.validateWeMapKey();
-  return "https://apis.wemap.asia/we-tools/lookup?id=W$osmID&$key";
+  return Uri.parse("https://apis.wemap.asia/we-tools/lookup?id=W$osmID&$key");
 }
 
 ///Weather
-String apiWeather(LatLng latLng) {
+Uri apiWeather(LatLng latLng) {
   Configuration.validateOpenWeatherKey();
-  return 'http://openweathermap.org/data/2.5/weather?lat=${latLng.latitude}&lon=${latLng.longitude}&appid=${Configuration.openWeatherKey}&units=metric';
+  return Uri.parse(
+      'http://openweathermap.org/data/2.5/weather?lat=${latLng.latitude}&lon=${latLng.longitude}&appid=${Configuration.openWeatherKey}&units=metric');
 }
 
-String apiWeatherForecast(int cityId) {
+Uri apiWeatherForecast(int cityId) {
   Configuration.validateOpenWeatherKey();
-  return 'https://openweathermap.org/data/2.5/forecast/hourly?appid=b6907d289e10d714a6e88b30761fae22&id=$cityId&units=metric';
+  return Uri.parse(
+      'https://openweathermap.org/data/2.5/forecast/hourly?appid=b6907d289e10d714a6e88b30761fae22&id=$cityId&units=metric');
 }
 
 ///Explore
-String apiExplore(String type, LatLng latLng) {
+Uri apiExplore(String type, LatLng latLng) {
   Configuration.validateWeMapKey();
   String url;
   String baseUrl =
@@ -104,23 +109,24 @@ String apiExplore(String type, LatLng latLng) {
           'https://apis.wemap.asia/we-tools/explore?$key&lat=21.0381165&lon=105.7820646&k=amenity&v=cafe&limit=20&d=1000';
       break;
   }
-  return url;
+  return Uri.parse(url);
 }
 
 ///AQI
-String apiAQI() {
+Uri apiAQI() {
   Configuration.validateWeMapKey();
-  return 'http://api2.fairnet.vn/kit/byNetwork?networkId=5c99d82895a37642f6df6553';
+  return Uri.parse(
+      'http://api2.fairnet.vn/kit/byNetwork?networkId=5c99d82895a37642f6df6553');
 }
 
-String apiKitAQI(int kitID) {
+Uri apiKitAQI(int kitID) {
   Configuration.validateWeMapKey();
-  return 'http://api2.fairnet.vn/kit/$kitID';
+  return Uri.parse('http://api2.fairnet.vn/kit/$kitID');
 }
 
-String apiAnalysisByHourKit() {
+Uri apiAnalysisByHourKit() {
   Configuration.validateWeMapKey();
-  return 'http://api2.fairnet.vn/data/analysisbyhour';
+  return Uri.parse('http://api2.fairnet.vn/data/analysisbyhour');
 }
 
 String apiAnalysisByHourAQI(String kidID, String startTime, String finishTime) {
@@ -153,4 +159,3 @@ String aqiRate(int aqi) {
   else if (aqi <= 300) return wemap_aqiVeryUnhealthy;
   return wemap_aqiHazardous;
 }
-

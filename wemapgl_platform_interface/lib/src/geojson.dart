@@ -295,8 +295,8 @@ class GeoJSONOptions {
     dynamic json;
     if (this.geojson.contains("http")) {
       try {
-        final response = await http.get(this.geojson);
-        json = JSON.jsonDecode(response.body);
+        final response = await http.get(Uri.parse(this.geojson));
+        json = JSON.jsonDecode(utf8.decode(response.bodyBytes));
       } catch (err) {
         print(err.toString());
       }
