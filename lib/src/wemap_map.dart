@@ -8,13 +8,13 @@ typedef void MapCreatedCallback(WeMapController controller);
 
 class WeMap extends StatefulWidget {
   WeMap(
-      {@required this.initialCameraPosition,
+      {required this.initialCameraPosition,
       this.onMapCreated,
       this.onStyleLoadedCallback,
       this.gestureRecognizers,
       this.compassEnabled = true,
       this.cameraTargetBounds = CameraTargetBounds.unbounded,
-      this.styleString,
+      String? styleString,
       this.minMaxZoomPreference = MinMaxZoomPreference.unbounded,
       this.rotateGesturesEnabled = true,
       this.scrollGesturesEnabled = true,
@@ -38,8 +38,9 @@ class WeMap extends StatefulWidget {
       this.reverse = false,
       this.showReverseClearButton = true,
       this.onPlaceCardClose,
-      this.destinationIcon})
-      : assert(initialCameraPosition != null);
+      this.destinationIcon}) {
+    this.styleString = styleString ?? WeMapStyles.WEMAP_VECTOR_STYLE;
+  }
 
   /// default is false,
   /// if true the Place Card at the bottom will be called.
@@ -67,7 +68,7 @@ class WeMap extends StatefulWidget {
   /// Geographical bounding box for the camera target.
   final CameraTargetBounds cameraTargetBounds;
 
-  final String? styleString;
+  late final String? styleString;
 
   /// Preferred bounds for the camera zoom level.
   ///
@@ -177,7 +178,6 @@ class _WeMapState extends State<WeMap> {
   final Completer<WeMapController> _controller = Completer<WeMapController>();
 
   late _WeMapOptions _weMapMapOptions;
-  late String _styleString;
   final WeMapGlPlatform _weMapGlPlatform = WeMapGlPlatform.createInstance();
 
   @override
@@ -194,7 +194,6 @@ class _WeMapState extends State<WeMap> {
   @override
   void initState() {
     super.initState();
-    _styleString = (widget.styleString ?? WeMapStyles.WEMAP_VECTOR_STYLE);
     // if (widget.styleString == null) widget.styleString = WeMapStyles.WEMAP_VECTOR_STYLE;
     _weMapMapOptions = _WeMapOptions.fromWidget(widget);
   }
