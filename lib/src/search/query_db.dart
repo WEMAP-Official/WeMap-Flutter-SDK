@@ -8,7 +8,7 @@ AsyncMemoizer<List<WeMapPlace>> _cacheDb = AsyncMemoizer<List<WeMapPlace>>();
 WeMapStream<List<WeMapPlace>> streamPlace = WeMapStream<List<WeMapPlace>>();
 
 void savePlace(WeMapPlace place) async {
-  if (await _searchDB.existPlace(place.placeId)) {
+  if (await _searchDB.existPlace(place.placeId!)) {
     // Case 1: Update operation
     placeUpdate(place);
   } else {
@@ -27,7 +27,7 @@ Future<List<WeMapPlace>> getAllPlace() async {
 
 void placeInsert(WeMapPlace place) async {
   // print("insert place with id = ${place.placeId}");
-  List<WeMapPlace> newList = streamPlace.data;
+  List<WeMapPlace>? newList = streamPlace.data;
   if (newList != null) {
     newList.add(place);
     streamPlace.increment(newList);
@@ -38,9 +38,9 @@ void placeInsert(WeMapPlace place) async {
 
 void placeUpdate(WeMapPlace place) async {
   // print("update place with id = ${place.placeId}");
-  List<WeMapPlace> newList = streamPlace.data;
+  List<WeMapPlace>? newList = streamPlace.data;
   if (newList != null) {
-    for (WeMapPlace oldPlace in streamPlace.data) {
+    for (WeMapPlace oldPlace in streamPlace.data!) {
       if (oldPlace.placeId == place.placeId) {
         newList.remove(oldPlace);
         newList.add(place);
@@ -56,9 +56,9 @@ void placeUpdate(WeMapPlace place) async {
 
 void deletePlaceInHistory(WeMapPlace place) async {
   // print("delete place with id = ${place.placeId}");
-  List<WeMapPlace> newList = streamPlace.data;
+  List<WeMapPlace>? newList = streamPlace.data;
   if (newList != null) {
-    for (WeMapPlace oldPlace in streamPlace.data) {
+    for (WeMapPlace oldPlace in streamPlace.data!) {
       if (oldPlace.placeId == place.placeId) {
         newList.remove(oldPlace);
         break;
@@ -78,7 +78,7 @@ void deleteAllInHistory() async {
   _cacheDb = AsyncMemoizer<List<WeMapPlace>>();
 }
 
-List<WeMapPlace> getPlaceHistory(DateQuery date, List<WeMapPlace> allPlace, {int limit}) {
+List<WeMapPlace> getPlaceHistory(DateQuery date, List<WeMapPlace>? allPlace, {int? limit}) {
   List<WeMapPlace> places = [];
   int len = 0;
   if (allPlace == null)
@@ -94,59 +94,31 @@ List<WeMapPlace> getPlaceHistory(DateQuery date, List<WeMapPlace> allPlace, {int
       for (int i = 0; i < len; i++) {
         WeMapPlace place = allPlace[i];
         final now = DateTime.now();
-        if (DateTime(
-              place.lastUpdated.year,
-              place.lastUpdated.month,
-              place.lastUpdated.day,
-            ) ==
-            DateTime(
-              now.year,
-              now.month,
-              now.day - 1,
-            )) places.add(place);
+        if (DateTime(place.lastUpdated!.year, place.lastUpdated!.month, place.lastUpdated!.day) == DateTime(now.year, now.month, now.day - 1))
+          places.add(place);
       }
       break;
     case DateQuery.BEFOREYESTERDAY:
       for (int i = 0; i < len; i++) {
         WeMapPlace place = allPlace[i];
         final now = DateTime.now();
-        if (DateTime(
-              place.lastUpdated.year,
-              place.lastUpdated.month,
-              place.lastUpdated.day,
-            ) ==
-            DateTime(
-              now.year,
-              now.month,
-              now.day - 2,
-            )) places.add(place);
+        if (DateTime(place.lastUpdated!.year, place.lastUpdated!.month, place.lastUpdated!.day) == DateTime(now.year, now.month, now.day - 2))
+          places.add(place);
       }
       break;
     case DateQuery.PREVIOUSSEARCHES:
       for (int i = 0; i < len; i++) {
         WeMapPlace place = allPlace[i];
         final now = DateTime.now();
-        if (place.lastUpdated.isBefore(DateTime(
-          now.year,
-          now.month,
-          now.day - 2,
-        ))) places.add(place);
+        if (place.lastUpdated!.isBefore(DateTime(now.year, now.month, now.day - 2))) places.add(place);
       }
       break;
     default:
       for (int i = 0; i < len; i++) {
         WeMapPlace place = allPlace[i];
         final now = DateTime.now();
-        if (DateTime(
-              place.lastUpdated.year,
-              place.lastUpdated.month,
-              place.lastUpdated.day,
-            ) ==
-            DateTime(
-              now.year,
-              now.month,
-              now.day,
-            )) places.add(place);
+        if (DateTime(place.lastUpdated!.year, place.lastUpdated!.month, place.lastUpdated!.day) == DateTime(now.year, now.month, now.day))
+          places.add(place);
       }
   }
 

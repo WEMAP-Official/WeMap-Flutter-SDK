@@ -1,51 +1,53 @@
 part of wemapgl;
 
 class ChooseLocation extends StatefulWidget {
-  final void Function() onSelected;
-  void Function(bool from) isFrom;
-  void Function(int isActivity) isActivity;
-  final bool isController;
-  final bool isHome;
-  WeMapPlace placeOnHome;
-  List<int> fromDriving;
-  LatLng searchLocation;
-  WeMapPlace originPlace;
-  WeMapPlace destinationPlace;
-  String originIcon;
-  String destinationIcon;
-  ChooseLocation(
-      {this.onSelected,
-      Key key,
-      this.isFrom,
-      this.isController,
-      this.isHome,
-      this.placeOnHome,
-      this.fromDriving,
-      this.isActivity,
-      this.searchLocation,
-      this.originPlace,
-      this.destinationPlace,
-      this.originIcon,
-      this.destinationIcon})
-      : super(
-          key: key,
-        );
+  final void Function()? onSelected;
+  final void Function(bool from)? isFrom;
+  final void Function(int isActivity)? isActivity;
+  final bool? isController;
+  final bool? isHome;
+  final WeMapPlace? placeOnHome;
+  final List<int>? fromDriving;
+  final LatLng? searchLocation;
+  final WeMapPlace? originPlace;
+  final WeMapPlace? destinationPlace;
+  final String? originIcon;
+  final String? destinationIcon;
+  final Function(WeMapPlace?) onSelectOriginPlace;
+  final Function(WeMapPlace?) onSelectDestinationPlace;
+
+  ChooseLocation({
+    required this.onSelectOriginPlace,
+    required this.onSelectDestinationPlace,
+    this.onSelected,
+    Key? key,
+    this.isFrom,
+    this.isController,
+    this.isHome,
+    this.placeOnHome,
+    this.fromDriving,
+    this.isActivity,
+    this.searchLocation,
+    this.originPlace,
+    this.destinationPlace,
+    this.originIcon,
+    this.destinationIcon,
+  }) : super(key: key);
 
   @override
   ChooseLocationState createState() => ChooseLocationState();
 }
 
-class ChooseLocationState extends State<ChooseLocation>
-    with SingleTickerProviderStateMixin {
-  WeMapPlace fromAddress;
-  WeMapPlace toAddress;
+class ChooseLocationState extends State<ChooseLocation> with SingleTickerProviderStateMixin {
+  WeMapPlace? fromAddress;
+  WeMapPlace? toAddress;
 
   int isActivity = 1;
 
   String location1 = originHint;
   String location2 = destinationHint;
-  LatLng ori;
-  LatLng des;
+  LatLng? ori;
+  LatLng? des;
 
   void updateTextTo(String text) {
     setState(() {
@@ -63,18 +65,18 @@ class ChooseLocationState extends State<ChooseLocation>
     if (fromHomeStream.data == true) {
       setState(() {
         fromAddress = widget.originPlace;
-        location1 = fromAddress == null ? location1 : fromAddress.description;
-        ori = fromAddress == null ? ori : fromAddress.location;
+        location1 = fromAddress == null ? location1 : fromAddress!.description!;
+        ori = fromAddress == null ? ori : fromAddress!.location!;
         fromAddress = null;
       });
     } else {
       setState(() {
-        location1 = fromAddress == null ? location1 : fromAddress.description;
-        ori = fromAddress == null ? ori : fromAddress.location;
+        location1 = fromAddress == null ? location1 : fromAddress!.description!;
+        ori = fromAddress == null ? ori : fromAddress!.location!;
         fromAddress = null;
       });
     }
-    widget.onSelected();
+    widget.onSelected?.call();
     return location1;
   }
 
@@ -82,24 +84,24 @@ class ChooseLocationState extends State<ChooseLocation>
     if (fromHomeStream.data == true) {
       setState(() {
         toAddress = widget.destinationPlace;
-        location2 = toAddress == null ? location2 : toAddress.description;
-        des = toAddress == null ? des : toAddress.location;
+        location2 = toAddress == null ? location2 : toAddress!.description!;
+        des = toAddress == null ? des : toAddress!.location!;
         toAddress = null;
       });
     } else {
       setState(() {
-        location2 = toAddress == null ? location2 : toAddress.description;
-        des = toAddress == null ? des : toAddress.location;
+        location2 = toAddress == null ? location2 : toAddress!.description!;
+        des = toAddress == null ? des : toAddress!.location!;
         toAddress = null;
       });
     }
-    widget.onSelected();
+    widget.onSelected?.call();
     return location2;
   }
 
   void locationSwap(WeMapPlace origin, WeMapPlace destination) {
     String temp = '';
-    LatLng latLng;
+    LatLng? latLng;
     WeMapPlace place;
     temp = location1;
     latLng = ori;
@@ -118,10 +120,12 @@ class ChooseLocationState extends State<ChooseLocation>
 
   void originChooseMap(WeMapPlace place) {
     fromAddress = place;
+    widget.onSelectOriginPlace.call(fromAddress);
   }
 
   void destinationChooseMap(WeMapPlace place) {
     toAddress = place;
+    widget.onSelectDestinationPlace.call(toAddress);
   }
 
   @override
@@ -151,16 +155,14 @@ class ChooseLocationState extends State<ChooseLocation>
               height: 45,
               decoration: _containerDecoration(),
               padding: EdgeInsets.only(bottom: 0),
-              child: FlatButton(
+              child: TextButton(
                 onPressed: () async {
                   setState(() {
                     Navigator.push(
                         context,
                         MaterialPageRouteWithoutAnimation(
                           builder: (context) => WeMapSearch(
-                            location: widget.searchLocation != null
-                                ? widget.searchLocation
-                                : LatLng(21.03, 105.787),
+                            location: widget.searchLocation ?? LatLng(21.03, 105.787),
                             showYourLocation: true,
                             showChooseOnMap: true,
                             hintText: originHintText,
@@ -168,35 +170,31 @@ class ChooseLocationState extends State<ChooseLocation>
                               setState(() {
                                 fromAddress = place;
                               });
+                              widget.onSelectOriginPlace.call(fromAddress);
                             },
                             onTapYourLocation: () {
-                              fromAddress = new WeMapPlace(
-                                  location: widget.searchLocation,
-                                  description: wemap_yourLocation);
+                              fromAddress = WeMapPlace(location: widget.searchLocation, description: wemap_yourLocation);
+                              widget.onSelectOriginPlace.call(fromAddress);
+
                               isDrivingStream.increment(true);
                             },
                             onTapChooseOnMap: () {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => ChooseOnMap(
-                                        searchLocation:
-                                            widget.searchLocation != null
-                                                ? widget.searchLocation
-                                                : LatLng(21.03, 105.787),
+                                        searchLocation: widget.searchLocation ?? LatLng(21.03, 105.787),
                                         iconImage: widget.destinationIcon,
                                         onChooseMap: originChooseMap,
                                       )));
                             },
                           ),
                         ));
-                    if (widget != null) {
-                      widget.isFrom(true);
-                      if (widget.fromDriving[0] == 1) {
-                        isActivity = 0;
-                        widget.isActivity(0);
-                      }
-                      widget.fromDriving.clear();
-                      widget.fromDriving.add(0);
+                    widget.isFrom?.call(true);
+                    if (widget.fromDriving?[0] == 1) {
+                      isActivity = 0;
+                      widget.isActivity?.call(0);
                     }
+                    widget.fromDriving?.clear();
+                    widget.fromDriving?.add(0);
                   });
                 },
                 child: SizedBox(
@@ -208,24 +206,14 @@ class ChooseLocationState extends State<ChooseLocation>
                       SizedBox(
                         width: 20,
                         height: 50,
-                        child: Center(
-                          child: Icon(
-                            Icons.place,
-                            color: Colors.black,
-                            size: 20,
-                          ),
-                        ),
+                        child: Center(child: Icon(Icons.place, color: Colors.black, size: 20)),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(
-                          left: 40,
-                          right: 50,
-                        ),
+                        padding: EdgeInsets.only(left: 40, right: 50),
                         child: Text(
                           searchTextFrom(),
                           overflow: TextOverflow.ellipsis,
-                          style:
-                              TextStyle(fontSize: 16, color: Color(0xff323643)),
+                          style: TextStyle(fontSize: 16, color: Color(0xff323643)),
                         ),
                       )
                     ],
@@ -239,52 +227,45 @@ class ChooseLocationState extends State<ChooseLocation>
             padding: EdgeInsets.only(top: 0),
             height: 45,
             decoration: _containerDecoration(),
-            child: FlatButton(
+            child: TextButton(
               onPressed: () {
                 setState(() {
                   Navigator.push(
                       context,
                       MaterialPageRouteWithoutAnimation(
                         builder: (context) => WeMapSearch(
-                          location: widget.searchLocation != null
-                              ? widget.searchLocation
-                              : LatLng(21.03, 105.787),
+                          location: widget.searchLocation ?? LatLng(21.03, 105.787),
                           showYourLocation: true,
                           showChooseOnMap: true,
                           hintText: destinationHintText,
                           onSelected: (place) {
                             setState(() {
                               toAddress = place;
+                              widget.onSelectDestinationPlace.call(toAddress);
                             });
                           },
                           onTapYourLocation: () {
-                            toAddress = new WeMapPlace(
-                                location: widget.searchLocation,
-                                description: wemap_yourLocation);
+                            toAddress = WeMapPlace(location: widget.searchLocation, description: wemap_yourLocation);
+                            widget.onSelectDestinationPlace.call(toAddress);
                             isDrivingStream.increment(true);
                           },
                           onTapChooseOnMap: () {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => ChooseOnMap(
-                                      searchLocation:
-                                          widget.searchLocation != null
-                                              ? widget.searchLocation
-                                              : LatLng(21.03, 105.787),
+                                      searchLocation: widget.searchLocation ?? LatLng(21.03, 105.787),
                                       iconImage: widget.destinationIcon,
                                       onChooseMap: destinationChooseMap,
                                     )));
                           },
                         ),
                       ));
-                  if (widget != null) {
-                    if (widget.fromDriving[0] == 1) {
-                      isActivity = 0;
-                      widget.isActivity(0);
-                    }
-                    widget.fromDriving.clear();
-                    widget.fromDriving.add(0);
-                    widget.isFrom(false);
+                  if (widget.fromDriving?[0] == 1) {
+                    isActivity = 0;
+                    widget.isActivity?.call(0);
                   }
+                  widget.fromDriving?.clear();
+                  widget.fromDriving?.add(0);
+                  widget.isFrom?.call(false);
                 });
               },
               child: SizedBox(
@@ -296,21 +277,14 @@ class ChooseLocationState extends State<ChooseLocation>
                     SizedBox(
                       width: 20,
                       height: 50,
-                      child: Center(
-                        child: Icon(
-                          Icons.near_me,
-                          color: Color.fromRGBO(0, 113, 188, 1),
-                          size: 20,
-                        ),
-                      ),
+                      child: Center(child: Icon(Icons.near_me, color: Color.fromRGBO(0, 113, 188, 1), size: 20)),
                     ),
                     Padding(
                         padding: EdgeInsets.only(left: 40, right: 50),
                         child: Text(
                           searchTextTo(),
                           overflow: TextOverflow.ellipsis,
-                          style:
-                              TextStyle(fontSize: 16, color: Color(0xff323643)),
+                          style: TextStyle(fontSize: 16, color: Color(0xff323643)),
                         ))
                   ],
                 ),

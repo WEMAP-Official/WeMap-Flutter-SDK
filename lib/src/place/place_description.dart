@@ -1,14 +1,13 @@
 part of wemapgl;
 
 class WeMapPlaceDesc extends StatefulWidget {
-  final WeMapPlace place;
+  final WeMapPlace? place;
 
   /// List buttons after direction button
-  List<Widget> buttons;
-  String destinationIcon;
-  WeMapPlaceDesc({@required this.place, this.buttons, this.destinationIcon}) {
-    if (this.buttons == null) this.buttons = [];
-  }
+  final List<Widget>? buttons;
+  final String? destinationIcon;
+
+  WeMapPlaceDesc({required this.place, this.buttons = const [], this.destinationIcon});
 
   @override
   State<StatefulWidget> createState() => _WeMapPlaceDescState();
@@ -16,24 +15,16 @@ class WeMapPlaceDesc extends StatefulWidget {
 
 class _WeMapPlaceDescState extends State<WeMapPlaceDesc> {
   List tagsName = [];
-  Location _des = Location(
-    name: "hihi2",
-    latitude: 21.033811834334458,
-    longitude: 105.7840838429172,
-  );
-  Location _ori = Location(
-    name: "hihi",
-    latitude: 21.033811834334458,
-    longitude: 105.7840838429172,
-  );
-  WeMapNavigation _directions;
+  Location _des = Location(name: "hihi2", latitude: 21.033811834334458, longitude: 105.7840838429172);
+  Location _ori = Location(name: "hihi", latitude: 21.033811834334458, longitude: 105.7840838429172);
+  late WeMapNavigation _directions;
   bool _arrived = false;
-  double _distanceRemaining, _durationRemaining;
+  late double _distanceRemaining, _durationRemaining;
 
   @override
   void initState() {
-    if (widget.place.extraTags != null) {
-      tagsName = widget.place.extraTags.keys.toList();
+    if (widget.place?.extraTags != null) {
+      tagsName = widget.place!.extraTags!.keys.toList();
     }
     super.initState();
   }
@@ -61,7 +52,7 @@ class _WeMapPlaceDescState extends State<WeMapPlaceDesc> {
           color: Colors.black,
         ),
         title: Text(
-          upperFirstLetter(widget.place.placeName),
+          upperFirstLetter(widget.place!.placeName!),
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.w400,
@@ -86,7 +77,7 @@ class _WeMapPlaceDescState extends State<WeMapPlaceDesc> {
                             onPressed: () {
                               WeMapPlace origin;
                               WeMapPlace destination;
-                              print(widget.place.location);
+                              print(widget.place!.location);
                               if (widget.place != null) {
                                 weRequestLocation();
                                 final location = GPSService.Location();
@@ -97,19 +88,17 @@ class _WeMapPlaceDescState extends State<WeMapPlaceDesc> {
                                     longitude: locationData.longitude,
                                   );
                                   _des = Location(
-                                    name: widget.place.placeName,
-                                    latitude: widget.place.location.latitude,
-                                    longitude: widget.place.location.longitude,
+                                    name: widget.place?.placeName,
+                                    latitude: widget.place?.location?.latitude,
+                                    longitude: widget.place?.location?.longitude,
                                   );
-                                  origin = new WeMapPlace(
-                                    location:
-                                        LatLng(_ori.latitude, _ori.longitude),
+                                  origin = WeMapPlace(
+                                    location: LatLng(_ori.latitude!, _ori.longitude!),
                                     description: wemap_yourLocation,
                                   );
-                                  destination = new WeMapPlace(
-                                    location:
-                                        LatLng(_des.latitude, _des.longitude),
-                                    description: widget.place.placeName,
+                                  destination = WeMapPlace(
+                                    location: LatLng(_des.latitude!, _des.longitude!),
+                                    description: widget.place!.placeName,
                                   );
                                   print(destination.description);
                                   originPlaceStream.increment(origin);
@@ -146,9 +135,9 @@ class _WeMapPlaceDescState extends State<WeMapPlaceDesc> {
                                     longitude: locationData.longitude,
                                   );
                                   _des = Location(
-                                    name: widget.place.placeName,
-                                    latitude: widget.place.location.latitude,
-                                    longitude: widget.place.location.longitude,
+                                    name: widget.place?.placeName,
+                                    latitude: widget.place?.location?.latitude,
+                                    longitude: widget.place?.location?.longitude,
                                   );
                                   _directions.startNavigation(
                                     destination: _des,
@@ -161,31 +150,22 @@ class _WeMapPlaceDescState extends State<WeMapPlaceDesc> {
                             },
                           )
                         ] +
-                        widget.buttons,
+                        (widget.buttons ?? []),
                   ),
                 ),
                 ListTile(
-                  title: Text(
-                    upperFirstLetter(widget.place.placeName),
-                  ),
-                  leading: Icon(
-                    Icons.home,
-                    color: primaryColor,
-                  ),
+                  title: Text(upperFirstLetter(widget.place!.placeName!)),
+                  leading: Icon(Icons.home, color: primaryColor),
                   selected: false,
                   onTap: () {
                     // Navigator.pop(context);
                   },
                 ),
                 ListTile(
-                  title: Text(widget.place.street != null
-                      ? upperFirstLetter(
-                          widget.place.street + ", " + widget.place.cityState)
-                      : upperFirstLetter(widget.place.cityState)),
-                  leading: Icon(
-                    Icons.location_on,
-                    color: primaryColor,
-                  ),
+                  title: Text(widget.place?.street != null
+                      ? upperFirstLetter(widget.place!.street! + ", " + widget.place!.cityState!)
+                      : upperFirstLetter(widget.place!.cityState!)),
+                  leading: Icon(Icons.location_on, color: primaryColor),
                   selected: false,
                   onTap: () {
                     Navigator.pop(context);
@@ -196,12 +176,8 @@ class _WeMapPlaceDescState extends State<WeMapPlaceDesc> {
                 //   color: Colors.grey,
                 // ),
                 ListTile(
-                  title: Text(
-                      "${widget.place.location.latitude.toStringAsFixed(5)}, ${widget.place.location.longitude.toStringAsFixed(5)}"),
-                  leading: Icon(
-                    Icons.my_location,
-                    color: primaryColor,
-                  ),
+                  title: Text("${widget.place!.location!.latitude.toStringAsFixed(5)}, ${widget.place!.location!.longitude.toStringAsFixed(5)}"),
+                  leading: Icon(Icons.my_location, color: primaryColor),
                   selected: false,
                   onTap: () {
                     Navigator.pop(context);
@@ -217,190 +193,123 @@ class _WeMapPlaceDescState extends State<WeMapPlaceDesc> {
                   case "phone":
                     {
                       String _phone = "";
-                      if (widget.place.extraTags != null) {
-                        _phone = widget.place.extraTags[key].toString();
+                      if (widget.place?.extraTags != null) {
+                        _phone = widget.place!.extraTags![key].toString();
                       }
-                      return CustomListTile(
-                        form: "phone",
-                        value: _phone,
-                      );
+                      return CustomListTile(form: "phone", value: _phone);
                     }
-                    break;
                   case "website":
                     {
                       String _web = "";
-                      if (widget.place.extraTags != null) {
-                        _web = widget.place.extraTags[key].toString();
+                      if (widget.place?.extraTags != null) {
+                        _web = widget.place!.extraTags![key].toString();
                       }
-                      return CustomListTile(
-                        form: "web",
-                        value: _web,
-                      );
+                      return CustomListTile(form: "web", value: _web);
                     }
-                    break;
                   case "fax":
                     {
                       String _fax = "";
-                      if (widget.place.extraTags != null) {
-                        _fax = widget.place.extraTags[key].toString();
+                      if (widget.place?.extraTags != null) {
+                        _fax = widget.place!.extraTags![key].toString();
                       }
-                      return CustomListTile(
-                        icon: Icons.print,
-                        title: "Số fax",
-                        value: _fax,
-                      );
+                      return CustomListTile(icon: Icons.print, title: "Số fax", value: _fax);
                     }
-                    break;
                   case "opening_hours":
                     {
                       String _time = "";
-                      if (widget.place.extraTags != null) {
-                        _time = widget.place.extraTags[key].toString();
+                      if (widget.place?.extraTags != null) {
+                        _time = widget.place!.extraTags![key].toString();
                       }
-                      return CustomListTile(
-                        icon: Icons.access_time,
-                        title: openingHours,
-                        value: _time,
-                      );
+                      return CustomListTile(icon: Icons.access_time, title: openingHours, value: _time);
                     }
-                    break;
                   case "service_times":
                     {
                       String _time = "";
-                      if (widget.place.extraTags != null) {
-                        _time = widget.place.extraTags[key].toString();
+                      if (widget.place?.extraTags != null) {
+                        _time = widget.place!.extraTags![key].toString();
                       }
-                      return CustomListTile(
-                        icon: Icons.access_time,
-                        title: openingHours,
-                        value: _time,
-                      );
+                      return CustomListTile(icon: Icons.access_time, title: openingHours, value: _time);
                     }
-                    break;
                   case "level":
                     {
                       String _level = "";
-                      if (widget.place.extraTags != null) {
-                        _level = widget.place.extraTags[key].toString();
+                      if (widget.place?.extraTags != null) {
+                        _level = widget.place!.extraTags![key].toString();
                       }
-                      return CustomListTile(
-                        icon: Icons.add,
-                        title: levelText,
-                        value: _level,
-                      );
+                      return CustomListTile(icon: Icons.add, title: levelText, value: _level);
                     }
-                    break;
                   case "smoking":
                     {
                       String _smoke = "";
-                      if (widget.place.extraTags != null) {
-                        if (widget.place.extraTags[key].toString() == "yes") {
+                      if (widget.place?.extraTags != null) {
+                        if (widget.place!.extraTags![key].toString() == "yes")
                           _smoke = "Có";
-                        } else if (widget.place.extraTags[key].toString() ==
-                            "outside") {
+                        else if (widget.place!.extraTags![key].toString() == "outside")
                           _smoke = "Bên ngoài";
-                        } else
+                        else
                           _smoke = "Không";
                       }
-                      return CustomListTile(
-                        icon: Icons.smoking_rooms,
-                        title: smokingText,
-                        value: _smoke,
-                      );
+                      return CustomListTile(icon: Icons.smoking_rooms, title: smokingText, value: _smoke);
                     }
-                    break;
                   case "internet_access":
                     {
                       String _internet = "";
-                      if (widget.place.extraTags != null) {
-                        if (widget.place.extraTags[key].toString() == "yes") {
+                      if (widget.place?.extraTags != null) {
+                        if (widget.place!.extraTags![key].toString() == "yes")
                           _internet = "Có";
-                        } else
+                        else
                           _internet = "Không";
                       }
-                      return CustomListTile(
-                        icon: Icons.wifi,
-                        title: internetText,
-                        value: _internet,
-                      );
+                      return CustomListTile(icon: Icons.wifi, title: internetText, value: _internet);
                     }
-                    break;
                   case "stars":
                     {
                       String _star = "";
-                      if (widget.place.extraTags != null) {
-                        _star = widget.place.extraTags[key].toString();
+                      if (widget.place?.extraTags != null) {
+                        _star = widget.place!.extraTags![key].toString();
                       }
-                      return CustomListTile(
-                        icon: Icons.star,
-                        title: starsText,
-                        value: _star,
-                      );
+                      return CustomListTile(icon: Icons.star, title: starsText, value: _star);
                     }
-                    break;
                   case "lanes":
                     {
                       String _lanes = "";
-                      if (widget.place.extraTags != null) {
-                        _lanes = widget.place.extraTags[key].toString();
+                      if (widget.place!.extraTags != null) {
+                        _lanes = widget.place!.extraTags![key].toString();
                       }
-                      return CustomListTile(
-                        icon: Icons.label_important,
-                        title: lanesText,
-                        value: _lanes,
-                      );
+                      return CustomListTile(icon: Icons.label_important, title: lanesText, value: _lanes);
                     }
-                    break;
-                  case "oneway":
+                  case "oay":
                     {
-                      String _oneway = "";
-                      if (widget.place.extraTags != null) {
-                        _oneway = widget.place.extraTags[key].toString();
+                      String _oay = "";
+                      if (widget.place?.extraTags != null) {
+                        _oay = widget.place!.extraTags![key].toString();
                       }
-                      return CustomListTile(
-                        icon: Icons.label_important,
-                        title: _oneway == "yes" ? oneWayText : twoWaysText,
-                        value: "yes",
-                      );
+                      return CustomListTile(icon: Icons.label_important, title: _oay == "yes" ? oneWayText : twoWaysText, value: "yes");
                     }
-                    break;
                   case "maxspeed":
                     {
                       String _maxspeed = "";
-                      if (widget.place.extraTags != null) {
-                        _maxspeed = widget.place.extraTags[key].toString();
+                      if (widget.place?.extraTags != null) {
+                        _maxspeed = widget.place!.extraTags![key].toString();
                       }
-                      return CustomListTile(
-                        icon: Icons.local_shipping,
-                        title: maxSpeed,
-                        value: _maxspeed,
-                      );
+                      return CustomListTile(icon: Icons.local_shipping, title: maxSpeed, value: _maxspeed);
                     }
-                    break;
                   default:
                     return Container();
-                    break;
                 }
               }).toList() +
               [
                 Padding(
-                  padding: const EdgeInsets.only(
-                    left: 24.0,
-                    right: 24.0,
-                    top: 12.0,
-                  ),
-                  child: OutlineButton(
+                  padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 12.0),
+                  child: OutlinedButton(
                     onPressed: () {
                       Fluttertoast.showToast(msg: developing);
                     },
-                    child: Text(
-                      describeExpInfo,
-                      style: TextStyle(color: Color.fromRGBO(0, 113, 188, 1)),
-                    ),
-                    highlightedBorderColor: primaryColor,
-                    shape: StadiumBorder(),
-                    borderSide: BorderSide(
-                      color: primaryColor,
+                    child: Text(describeExpInfo, style: TextStyle(color: Color.fromRGBO(0, 113, 188, 1))),
+                    style: OutlinedButton.styleFrom(
+                      // highlightedBorderColor: primaryColor,
+                      shape: StadiumBorder(),
+                      side: BorderSide(color: primaryColor),
                     ),
                   ),
                 ),
@@ -412,34 +321,28 @@ class _WeMapPlaceDescState extends State<WeMapPlaceDesc> {
 }
 
 class CustomButton extends Container {
-  BuildContext context;
+  final BuildContext context;
   final VoidCallback onPressed;
-  IconData icon;
-  String buttonName;
-  double width;
+  final IconData icon;
+  final String buttonName;
+  late double width;
 
-  CustomButton(
-      {@required this.onPressed, this.buttonName, this.icon, this.context})
-      : super(
+  CustomButton({
+    required this.onPressed,
+    required this.context,
+    required this.buttonName,
+    required this.icon,
+  }) : super(
           width: MediaQuery.of(context).size.width / 4,
           child: Center(
             child: Column(
               children: <Widget>[
-                OutlineButton(
-                  child: Icon(
-                    icon,
-                    color: primaryColor,
-                  ),
+                OutlinedButton(
+                  child: Icon(icon, color: primaryColor),
                   onPressed: onPressed,
-                  shape: CircleBorder(),
-                  borderSide: BorderSide(
-                    color: primaryColor,
-                  ),
+                  style: OutlinedButton.styleFrom(shape: CircleBorder(), side: BorderSide(color: primaryColor)),
                 ),
-                Text(
-                  buttonName,
-                  style: TextStyle(color: primaryColor, fontSize: 12),
-                )
+                Text(buttonName, style: TextStyle(color: primaryColor, fontSize: 12))
               ],
             ),
           ),
@@ -447,12 +350,13 @@ class CustomButton extends Container {
 }
 
 class CustomListTile extends StatefulWidget {
-  String value;
-  String form;
-  String title;
-  IconData icon;
+  final String? value;
+  final String? form;
+  final String? title;
+  final IconData? icon;
 
   CustomListTile({this.value, this.form, this.title, this.icon});
+
   @override
   State<StatefulWidget> createState() {
     return _CustomListTileState();
@@ -465,63 +369,40 @@ class _CustomListTileState extends State<CustomListTile> {
     switch (widget.form) {
       case "phone":
         return phoneListTile(value: widget.value);
-        break;
       case "web":
         return webListTile(value: widget.value);
-        break;
       default:
-        return defaultListTile(
-            icon: widget.icon, value: widget.value, title: widget.title);
-        break;
+        return defaultListTile(icon: widget.icon, value: widget.value, title: widget.title);
     }
   }
 
-  Widget defaultListTile({IconData icon, String value, String title}) {
+  Widget defaultListTile({IconData? icon, String? value, String? title}) {
     return ListTile(
       isThreeLine: false,
-      leading: Icon(
-        icon,
-        color: primaryColor,
-      ),
+      leading: Icon(icon, color: primaryColor),
       selected: false,
-      title: Text(
-        title + ": " + value,
-      ),
+      title: Text("$title" + ": " + "$value"),
     );
   }
 
-  Widget phoneListTile({String value}) {
+  Widget phoneListTile({String? value}) {
     return ListTile(
       isThreeLine: false,
-      leading: Icon(
-        Icons.phone,
-        color: primaryColor,
-      ),
+      leading: Icon(Icons.phone, color: primaryColor),
       selected: false,
-      title: Text(
-        value,
-      ),
+      title: Text("$value"),
       onTap: () {
         launch("tel:$value");
       },
     );
   }
 
-  Widget webListTile({String value}) {
+  Widget webListTile({String? value}) {
     return ListTile(
       isThreeLine: false,
-      leading: Icon(
-        Icons.public,
-        color: primaryColor,
-      ),
+      leading: Icon(Icons.public, color: primaryColor),
       selected: false,
-      title: Text(
-        value,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: Colors.blue,
-        ),
-      ),
+      title: Text("$value", overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.blue)),
       onTap: () {
         launch("$value");
       },

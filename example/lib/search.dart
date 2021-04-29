@@ -1,10 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:wemapgl/wemapgl.dart';
-import 'dart:async';
 
 import 'ePage.dart';
 
-class SearchPage extends ePage {
+class SearchPage extends EPage {
   SearchPage() : super(const Icon(Icons.search), 'Search page');
 
   @override
@@ -15,16 +16,17 @@ class SearchPage extends ePage {
 
 class SearchAPI extends StatefulWidget {
   const SearchAPI();
+
   @override
   State createState() => SearchAPIState();
 }
 
 class SearchAPIState extends State<SearchAPI> {
   WeMapSearchAPI searchAPI = WeMapSearchAPI();
-  Timer t;
+  Timer? t;
 
   List<WeMapPlace> result = [];
-  LatLng latLng = new LatLng(20.037, 105.7876);
+  LatLng latLng = LatLng(20.037, 105.7876);
 
   @override
   Widget build(BuildContext context) {
@@ -42,21 +44,20 @@ class SearchAPIState extends State<SearchAPI> {
                     labelText: 'Enter key word to search',
                   ),
                   onChanged: (text) async {
-                    if (t != null) t.cancel();
+                    if (t != null) t!.cancel();
                     t = Timer(Duration(seconds: 1), () async {
-                      List<WeMapPlace> places = await searchAPI.getSearchResult(
-                          text, latLng, WeMapGeocoder.Pelias);
+                      List<WeMapPlace> places = await searchAPI.getSearchResult(text, latLng, WeMapGeocoder.Pelias);
                       setState(() {
                         result = places;
                       });
                     });
                   },
                 ),
-                new Expanded(
-                    child: new ListView.builder(
+                Expanded(
+                    child: ListView.builder(
                         itemCount: result.length,
-                        itemBuilder: (BuildContext ctxt, int Index) {
-                          return ListTile(title: Text(result[Index].placeName));
+                        itemBuilder: (BuildContext ctxt, int idx) {
+                          return ListTile(title: Text(result[idx].placeName ?? ""));
                         }))
               ],
             )));

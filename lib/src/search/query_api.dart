@@ -1,17 +1,15 @@
-
 part of wemapgl;
 
 class WeMapSearchAPI {
   const WeMapSearchAPI();
 
-  Future<List<WeMapPlace>> getSearchResult(
-      String input, LatLng latLng, WeMapGeocoder geocoder) async {
+  Future<List<WeMapPlace>> getSearchResult(String input, LatLng latLng, WeMapGeocoder geoCoder) async {
     List<WeMapPlace> places = [];
     try {
-      final response = await http.get(apiSearch(input, latLng, geocoder));
+      final response = await http.get(Uri.parse(apiSearch(input, latLng, geoCoder)));
       final json = JSON.jsonDecode(response.body);
       List results = json["features"];
-      switch (geocoder) {
+      switch (geoCoder) {
         case WeMapGeocoder.Photon:
           // print("Search query api Geocoder.Photon: ${apiSearch(input, latLng, geocoder)}");
           results.forEach((prediction) {

@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 import 'dart:math';
 
@@ -8,7 +6,7 @@ import 'package:wemapgl/wemapgl.dart';
 
 import 'ePage.dart';
 
-class PlaceSymbolPage extends ePage {
+class PlaceSymbolPage extends EPage {
   PlaceSymbolPage() : super(const Icon(Icons.place), 'Place symbol');
 
   @override
@@ -25,13 +23,11 @@ class PlaceSymbolBody extends StatefulWidget {
 }
 
 class PlaceSymbolBodyState extends State<PlaceSymbolBody> {
-  PlaceSymbolBodyState();
-
   static final LatLng center = const LatLng(20.86711, 105.1947171);
 
-  WeMapController controller;
+  late WeMapController controller;
   int _symbolCount = 0;
-  Symbol _selectedSymbol;
+  Symbol? _selectedSymbol;
 
   void _onMapCreated(WeMapController controller) {
     this.controller = controller;
@@ -40,28 +36,22 @@ class PlaceSymbolBodyState extends State<PlaceSymbolBody> {
 
   @override
   void dispose() {
-    controller?.onSymbolTapped?.remove(_onSymbolTapped);
+    controller.onSymbolTapped.remove(_onSymbolTapped);
     super.dispose();
   }
 
   void _onSymbolTapped(Symbol symbol) {
     if (_selectedSymbol != null) {
-      _updateSelectedSymbol(
-        const SymbolOptions(iconSize: 1.0),
-      );
+      _updateSelectedSymbol(const SymbolOptions(iconSize: 1.0));
     }
     setState(() {
       _selectedSymbol = symbol;
     });
-    _updateSelectedSymbol(
-      SymbolOptions(
-        iconSize: 1.4,
-      ),
-    );
+    _updateSelectedSymbol(SymbolOptions(iconSize: 1.4));
   }
 
   void _updateSelectedSymbol(SymbolOptions changes) {
-    controller.updateSymbol(_selectedSymbol, changes);
+    controller.updateSymbol(_selectedSymbol!, changes);
   }
 
   void _add(String iconImage) {
@@ -80,7 +70,7 @@ class PlaceSymbolBodyState extends State<PlaceSymbolBody> {
   }
 
   void _remove() {
-    controller.removeSymbol(_selectedSymbol);
+    controller.removeSymbol(_selectedSymbol!);
     setState(() {
       _selectedSymbol = null;
       _symbolCount -= 1;
@@ -88,7 +78,7 @@ class PlaceSymbolBodyState extends State<PlaceSymbolBody> {
   }
 
   void _changePosition() {
-    final LatLng current = _selectedSymbol.options.geometry;
+    final LatLng current = _selectedSymbol!.options.geometry!;
     final Offset offset = Offset(
       center.latitude - current.latitude,
       center.longitude - current.longitude,
@@ -104,68 +94,42 @@ class PlaceSymbolBodyState extends State<PlaceSymbolBody> {
   }
 
   void _changeIconOffset() {
-    Offset currentAnchor = _selectedSymbol.options.iconOffset;
-    if (currentAnchor == null) {
-      // default value
-      currentAnchor = Offset(0.0, 0.0);
-    }
+    Offset currentAnchor = _selectedSymbol?.options.iconOffset ?? Offset(0.0, 0.0);
+
     final Offset newAnchor = Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
     _updateSelectedSymbol(SymbolOptions(iconOffset: newAnchor));
   }
 
   Future<void> _changeIconAnchor() async {
-    String current = _selectedSymbol.options.iconAnchor;
+    String? current = _selectedSymbol?.options.iconAnchor;
     if (current == null || current == 'center') {
       current = 'bottom';
     } else {
       current = 'center';
     }
-    _updateSelectedSymbol(
-      SymbolOptions(iconAnchor: current),
-    );
+    _updateSelectedSymbol(SymbolOptions(iconAnchor: current));
   }
 
   Future<void> _toggleDraggable() async {
-    bool draggable = _selectedSymbol.options.draggable;
-    if (draggable == null) {
-      // default value
-      draggable = false;
-    }
+    bool draggable = _selectedSymbol?.options.draggable ?? false;
 
-    _updateSelectedSymbol(
-      SymbolOptions(draggable: !draggable),
-    );
+    _updateSelectedSymbol(SymbolOptions(draggable: !draggable));
   }
 
   Future<void> _changeAlpha() async {
-    double current = _selectedSymbol.options.iconOpacity;
-    if (current == null) {
-      // default value
-      current = 1.0;
-    }
+    double current = _selectedSymbol?.options.iconOpacity ?? 1.0;
 
-    _updateSelectedSymbol(
-      SymbolOptions(iconOpacity: current < 0.1 ? 1.0 : current * 0.75),
-    );
+    _updateSelectedSymbol(SymbolOptions(iconOpacity: current < 0.1 ? 1.0 : current * 0.75));
   }
 
   Future<void> _changeRotation() async {
-    double current = _selectedSymbol.options.iconRotate;
-    if (current == null) {
-      // default value
-      current = 0;
-    }
-    _updateSelectedSymbol(
-      SymbolOptions(iconRotate: current == 330.0 ? 0.0 : current + 30.0),
-    );
+    double current = _selectedSymbol?.options.iconRotate ?? 0;
+
+    _updateSelectedSymbol(SymbolOptions(iconRotate: current == 330.0 ? 0.0 : current + 30.0));
   }
 
   Future<void> _toggleVisible() async {
-    double current = _selectedSymbol.options.iconOpacity;
-    if (current == null) {
-      // default value
-      current = 1.0;
-    }
+    double current = _selectedSymbol?.options.iconOpacity ?? 1.0;
 
     _updateSelectedSymbol(
       SymbolOptions(iconOpacity: current == 0.0 ? 1.0 : 0.0),
@@ -173,14 +137,9 @@ class PlaceSymbolBodyState extends State<PlaceSymbolBody> {
   }
 
   Future<void> _changeZIndex() async {
-    int current = _selectedSymbol.options.zIndex;
-    if (current == null) {
-      // default value
-      current = 0;
-    }
-    _updateSelectedSymbol(
-      SymbolOptions(zIndex: current == 12 ? 0 : current + 1),
-    );
+    int current = _selectedSymbol?.options.zIndex ?? 0;
+
+    _updateSelectedSymbol(SymbolOptions(zIndex: current == 12 ? 0 : current + 1));
   }
 
   @override
@@ -211,13 +170,11 @@ class PlaceSymbolBodyState extends State<PlaceSymbolBody> {
                   children: <Widget>[
                     Column(
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: const Text('add'),
-                          onPressed: () => (_symbolCount == 12)
-                              ? null
-                              : _add("assets/symbols/custom-icon.png"),
+                          onPressed: () => (_symbolCount == 12) ? null : _add("assets/symbols/custom-icon.png"),
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('remove'),
                           onPressed: (_selectedSymbol == null) ? null : _remove,
                         ),
@@ -225,49 +182,37 @@ class PlaceSymbolBodyState extends State<PlaceSymbolBody> {
                     ),
                     Column(
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: const Text('change alpha'),
-                          onPressed:
-                              (_selectedSymbol == null) ? null : _changeAlpha,
+                          onPressed: (_selectedSymbol == null) ? null : _changeAlpha,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change icon offset'),
-                          onPressed:
-                              (_selectedSymbol == null) ? null : _changeIconOffset,
+                          onPressed: (_selectedSymbol == null) ? null : _changeIconOffset,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change icon anchor'),
-                          onPressed: (_selectedSymbol == null)
-                              ? null
-                              : _changeIconAnchor,
+                          onPressed: (_selectedSymbol == null) ? null : _changeIconAnchor,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('toggle draggable'),
-                          onPressed: (_selectedSymbol == null)
-                              ? null
-                              : _toggleDraggable,
+                          onPressed: (_selectedSymbol == null) ? null : _toggleDraggable,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change position'),
-                          onPressed: (_selectedSymbol == null)
-                              ? null
-                              : _changePosition,
+                          onPressed: (_selectedSymbol == null) ? null : _changePosition,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change rotation'),
-                          onPressed: (_selectedSymbol == null)
-                              ? null
-                              : _changeRotation,
+                          onPressed: (_selectedSymbol == null) ? null : _changeRotation,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('toggle visible'),
-                          onPressed:
-                              (_selectedSymbol == null) ? null : _toggleVisible,
+                          onPressed: (_selectedSymbol == null) ? null : _toggleVisible,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change zIndex'),
-                          onPressed:
-                              (_selectedSymbol == null) ? null : _changeZIndex,
+                          onPressed: (_selectedSymbol == null) ? null : _changeZIndex,
                         ),
                       ],
                     ),

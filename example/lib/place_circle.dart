@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 import 'dart:math';
 
@@ -8,7 +6,7 @@ import 'package:wemapgl/wemapgl.dart';
 
 import 'ePage.dart';
 
-class PlaceCirclePage extends ePage {
+class PlaceCirclePage extends EPage {
   PlaceCirclePage() : super(const Icon(Icons.add_circle), 'Place circle');
 
   @override
@@ -25,13 +23,11 @@ class PlaceCircleBody extends StatefulWidget {
 }
 
 class PlaceCircleBodyState extends State<PlaceCircleBody> {
-  PlaceCircleBodyState();
-
   static final LatLng center = const LatLng(20.86711, 105.1947171);
 
-  WeMapController controller;
+  late WeMapController controller;
   int _circleCount = 0;
-  Circle _selectedCircle;
+  Circle? _selectedCircle;
 
   void _onMapCreated(WeMapController controller) {
     this.controller = controller;
@@ -40,7 +36,7 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
 
   @override
   void dispose() {
-    controller?.onCircleTapped?.remove(_onCircleTapped);
+    controller.onCircleTapped.remove(_onCircleTapped);
     super.dispose();
   }
 
@@ -53,15 +49,11 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
     setState(() {
       _selectedCircle = circle;
     });
-    _updateSelectedCircle(
-      CircleOptions(
-        circleRadius: 30,
-      ),
-    );
+    _updateSelectedCircle(CircleOptions(circleRadius: 30));
   }
 
   void _updateSelectedCircle(CircleOptions changes) {
-    controller.updateCircle(_selectedCircle, changes);
+    controller.updateCircle(_selectedCircle!, changes);
   }
 
   void _add() {
@@ -79,7 +71,7 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
   }
 
   void _remove() {
-    controller.removeCircle(_selectedCircle);
+    controller.removeCircle(_selectedCircle!);
     setState(() {
       _selectedCircle = null;
       _circleCount -= 1;
@@ -87,121 +79,66 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
   }
 
   void _changePosition() {
-    final LatLng current = _selectedCircle.options.geometry;
-    final Offset offset = Offset(
-      center.latitude - current.latitude,
-      center.longitude - current.longitude,
-    );
+    final LatLng current = _selectedCircle!.options.geometry!;
+    final Offset offset = Offset(center.latitude - current.latitude, center.longitude - current.longitude);
     _updateSelectedCircle(
       CircleOptions(
-        geometry: LatLng(
-          center.latitude + offset.dy,
-          center.longitude + offset.dx,
-        ),
+        geometry: LatLng(center.latitude + offset.dy, center.longitude + offset.dx),
       ),
     );
   }
 
   void _changeDraggable() {
-    bool draggable = _selectedCircle.options.draggable;
-    if (draggable == null) {
-      // default value
-      draggable = false;
-    }
-    _updateSelectedCircle(
-      CircleOptions(
-        draggable: !draggable,
-      ),
-    );
+    bool draggable = _selectedCircle?.options.draggable ?? false;
+
+    _updateSelectedCircle(CircleOptions(draggable: !draggable));
   }
 
   void _getLatLng() async {
-    LatLng latLng = await controller.getCircleLatLng(_selectedCircle);
-    Scaffold.of(context).showSnackBar(
-      SnackBar(
-        content: Text(latLng.toString()),
-      ),
-    );
+    LatLng latLng = await controller.getCircleLatLng(_selectedCircle!);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(latLng.toString())));
   }
 
   void _changeCircleStrokeOpacity() {
-    double current = _selectedCircle.options.circleStrokeOpacity;
-    if (current == null) {
-      // default value
-      current = 1.0;
-    }
+    double current = _selectedCircle?.options.circleStrokeOpacity ?? 1.0;
 
-    _updateSelectedCircle(
-      CircleOptions(circleStrokeOpacity: current < 0.1 ? 1.0 : current * 0.75),
-    );
+    _updateSelectedCircle(CircleOptions(circleStrokeOpacity: current < 0.1 ? 1.0 : current * 0.75));
   }
 
   void _changeCircleStrokeWidth() {
-    double current = _selectedCircle.options.circleStrokeWidth;
-    if (current == null) {
-      // default value
-      current = 0;
-    }
+    double current = _selectedCircle?.options.circleStrokeWidth ?? 0;
+
     _updateSelectedCircle(CircleOptions(circleStrokeWidth: current == 0 ? 5.0 : 0));
   }
 
   Future<void> _changeCircleStrokeColor() async {
-    String current = _selectedCircle.options.circleStrokeColor;
-    if (current == null) {
-      // default value
-      current = "#FFFFFF";
-    }
+    String current = _selectedCircle?.options.circleStrokeColor ?? "#FFFFFF";
 
-    _updateSelectedCircle(
-      CircleOptions(circleStrokeColor: current == "#FFFFFF" ? "#FF0000" : "#FFFFFF"),
-    );
+    _updateSelectedCircle(CircleOptions(circleStrokeColor: current == "#FFFFFF" ? "#FF0000" : "#FFFFFF"));
   }
 
   Future<void> _changeCircleOpacity() async {
-    double current = _selectedCircle.options.circleOpacity;
-    if (current == null) {
-      // default value
-      current = 1.0;
-    }
+    double current = _selectedCircle?.options.circleOpacity ?? 1.0;
 
-    _updateSelectedCircle(
-      CircleOptions(circleOpacity: current < 0.1 ? 1.0 : current * 0.75),
-    );
+    _updateSelectedCircle(CircleOptions(circleOpacity: current < 0.1 ? 1.0 : current * 0.75));
   }
 
   Future<void> _changeCircleRadius() async {
-    double current = _selectedCircle.options.circleRadius;
-    if (current == null) {
-      // default value
-      current = 0;
-    }
-    _updateSelectedCircle(
-      CircleOptions(circleRadius: current == 120.0 ? 30.0 : current + 30.0),
-    );
+    double current = _selectedCircle?.options.circleRadius ?? 0;
+
+    _updateSelectedCircle(CircleOptions(circleRadius: current == 120.0 ? 30.0 : current + 30.0));
   }
 
   Future<void> _changeCircleColor() async {
-    String current = _selectedCircle.options.circleColor;
-    if (current == null) {
-      // default value
-      current = "#FF0000";
-    }
+    String current = _selectedCircle?.options.circleColor ?? "#FF0000";
 
-    _updateSelectedCircle(
-      CircleOptions(
-          circleColor: "#FFFF00"),
-    );
+    _updateSelectedCircle(CircleOptions(circleColor: current));
   }
 
   Future<void> _changeCircleBlur() async {
-    double current = _selectedCircle.options.circleBlur;
-    if (current == null) {
-      // default value
-      current = 0;
-    }
-    _updateSelectedCircle(
-      CircleOptions(circleBlur: current == 0.75 ? 0 : 0.75),
-    );
+    double current = _selectedCircle?.options.circleBlur ?? 0;
+
+    _updateSelectedCircle(CircleOptions(circleBlur: current == 0.75 ? 0 : 0.75));
   }
 
   @override
@@ -232,11 +169,11 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
                   children: <Widget>[
                     Column(
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: const Text('add'),
                           onPressed: (_circleCount == 12) ? null : _add,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('remove'),
                           onPressed: (_selectedCircle == null) ? null : _remove,
                         ),
@@ -244,61 +181,45 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
                     ),
                     Column(
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: const Text('change circle-opacity'),
-                          onPressed:
-                              (_selectedCircle == null) ? null : _changeCircleOpacity,
+                          onPressed: (_selectedCircle == null) ? null : _changeCircleOpacity,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change circle-radius'),
-                          onPressed: (_selectedCircle == null)
-                              ? null
-                              : _changeCircleRadius,
+                          onPressed: (_selectedCircle == null) ? null : _changeCircleRadius,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change circle-color'),
-                          onPressed:
-                          (_selectedCircle == null) ? null : _changeCircleColor,
+                          onPressed: (_selectedCircle == null) ? null : _changeCircleColor,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change circle-blur'),
-                          onPressed:
-                          (_selectedCircle == null) ? null : _changeCircleBlur,
+                          onPressed: (_selectedCircle == null) ? null : _changeCircleBlur,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change circle-stroke-width'),
-                          onPressed:
-                              (_selectedCircle == null) ? null : _changeCircleStrokeWidth,
+                          onPressed: (_selectedCircle == null) ? null : _changeCircleStrokeWidth,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change circle-stroke-color'),
-                          onPressed: (_selectedCircle == null)
-                              ? null
-                              : _changeCircleStrokeColor,
+                          onPressed: (_selectedCircle == null) ? null : _changeCircleStrokeColor,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change circle-stroke-opacity'),
-                          onPressed: (_selectedCircle == null)
-                              ? null
-                              : _changeCircleStrokeOpacity,
+                          onPressed: (_selectedCircle == null) ? null : _changeCircleStrokeOpacity,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change position'),
-                          onPressed: (_selectedCircle == null)
-                              ? null
-                              : _changePosition,
+                          onPressed: (_selectedCircle == null) ? null : _changePosition,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('toggle draggable'),
-                          onPressed: (_selectedCircle == null)
-                              ? null
-                              : _changeDraggable,
+                          onPressed: (_selectedCircle == null) ? null : _changeDraggable,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('get current LatLng'),
-                          onPressed: (_selectedCircle == null)
-                              ? null
-                              : _getLatLng,
+                          onPressed: (_selectedCircle == null) ? null : _getLatLng,
                         ),
                       ],
                     ),

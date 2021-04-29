@@ -10,9 +10,9 @@ class Line {
 
   String get id => _id;
 
-  final Map _data;
+  final Map? _data;
 
-  Map get data => _data;
+  Map? get data => _data;
 
   /// The line configuration options most recently applied programmatically
   /// via the map controller.
@@ -44,16 +44,16 @@ class LineOptions {
     this.draggable,
   });
 
-  final String lineJoin;
-  final double lineOpacity;
-  final String lineColor;
-  final double lineWidth;
-  final double lineGapWidth;
-  final double lineOffset;
-  final double lineBlur;
-  final String linePattern;
-  final List<LatLng> geometry;
-  final bool draggable;
+  final String? lineJoin;
+  final double? lineOpacity;
+  final String? lineColor;
+  final double? lineWidth;
+  final double? lineGapWidth;
+  final double? lineOffset;
+  final double? lineBlur;
+  final String? linePattern;
+  final List<LatLng>? geometry;
+  final bool? draggable;
 
   static const LineOptions defaultOptions = LineOptions();
 
@@ -92,8 +92,7 @@ class LineOptions {
     addIfPresent('lineOffset', lineOffset);
     addIfPresent('lineBlur', lineBlur);
     addIfPresent('linePattern', linePattern);
-    addIfPresent('geometry',
-        geometry?.map((LatLng latLng) => latLng.toJson())?.toList());
+    addIfPresent('geometry', geometry?.map((LatLng latLng) => latLng.toJson()).toList());
     addIfPresent('draggable', draggable);
     return json;
   }

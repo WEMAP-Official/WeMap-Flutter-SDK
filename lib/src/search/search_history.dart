@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:wemapgl/utils/language_vi.dart';
 import 'package:wemapgl/wemapgl.dart';
+
 import 'query_db.dart';
 import 'search_plugin.dart';
 
 class SearchHistory extends StatefulWidget {
-  final Function(WeMapPlace place) onSelected;
+  final Function(WeMapPlace place)? onSelected;
   final String title;
   final bool isUpperCase;
 
@@ -30,13 +31,12 @@ class SearchHistory extends StatefulWidget {
 }
 
 class _SearchHistoryState extends State<SearchHistory> {
-  ScrollController _scrollController; //Controll of listview
+  ScrollController _scrollController = ScrollController(); //Controll of listview
   double _appbarElevation = 0.7; //evlevation of appbar
 
   @override
   void initState() {
     print("init");
-    _scrollController = ScrollController();
     _scrollController.addListener(() {
       setState(() {
         _appbarElevation = _scrollController.offset >= 0.2 ? 5.0 : 0.7;
@@ -55,9 +55,7 @@ class _SearchHistoryState extends State<SearchHistory> {
         elevation: _appbarElevation,
         centerTitle: true,
         title: Text(
-          widget.isUpperCase
-              ? widget.title
-              : toBeginningOfSentenceCase(widget.title.toLowerCase()),
+          widget.isUpperCase ? widget.title : toBeginningOfSentenceCase(widget.title.toLowerCase())!,
           style: TextStyle(color: Colors.black),
         ),
         brightness: Brightness.light,
@@ -67,14 +65,12 @@ class _SearchHistoryState extends State<SearchHistory> {
         child: StreamBuilder(
             stream: streamPlace.stream,
             builder: (context, snapdata) {
-              List<WeMapPlace> allPlace = snapdata.data ?? [];
+              List<WeMapPlace> allPlace = snapdata.data != null ? snapdata.data as List<WeMapPlace> : [];
               return ListView(
                 controller: _scrollController,
                 children: getHsIntoWidget(
-                  previousSearchesList:
-                      getPlaceHistory(DateQuery.PREVIOUSSEARCHES, allPlace),
-                  beforeYesterdayList:
-                      getPlaceHistory(DateQuery.BEFOREYESTERDAY, allPlace),
+                  previousSearchesList: getPlaceHistory(DateQuery.PREVIOUSSEARCHES, allPlace),
+                  beforeYesterdayList: getPlaceHistory(DateQuery.BEFOREYESTERDAY, allPlace),
                   yesterdayList: getPlaceHistory(DateQuery.YESTERDAY, allPlace),
                   todayList: getPlaceHistory(DateQuery.TODAY, allPlace),
                   todayText: widget.todayText,
@@ -96,7 +92,7 @@ class _SearchHistoryState extends State<SearchHistory> {
   void _selectPlace(WeMapPlace place) {
     Navigator.pop(context);
     // Calls the `onSelected` callback
-    widget.onSelected(place);
+    widget.onSelected?.call(place);
     //Save db
     savePlace(place);
   }

@@ -1,11 +1,12 @@
 part of wemapgl_platform_interface;
 
 class Configuration {
-  static String _openWeatherKey;
-  static String _weMapKey;
+  static String? _openWeatherKey;
+  static String? _weMapKey;
 
-  static String get weMapKey => _weMapKey;
-  static String get openWeatherKey => _openWeatherKey;
+  static String? get weMapKey => _weMapKey;
+
+  static String? get openWeatherKey => _openWeatherKey;
 
   static void setWeMapKey(String weMapKey) {
     _weMapKey = weMapKey;
@@ -53,6 +54,4 @@ class Configuration {
       // } catch (e) {}
     }
   }
-  
 }
-

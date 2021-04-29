@@ -1,16 +1,13 @@
-
-
 part of wemapgl;
 
-// ignore: must_be_immutable
 class WeMapSearch extends StatefulWidget {
   WeMapSearch({
-    Key key,
-    @required this.location,
+    Key? key,
+    required this.location,
+    required this.onSelected,
     this.geocoder = WeMapGeocoder.Pelias,
-    this.topWiget,
-    this.botWiget,
-    @required this.onSelected,
+    this.topWiget = const <Widget>[],
+    this.botWiget = const <Widget>[],
     this.showYourLocation = false,
     this.yourLocationText = wemap_yourLocation,
     this.yourLocationWidget,
@@ -21,54 +18,51 @@ class WeMapSearch extends StatefulWidget {
     this.onTapChooseOnMap,
     this.hintText = wemap_searchHere,
     this.searchValue,
-  }) {
-    if (topWiget == null) topWiget = <Widget>[];
-    if (botWiget == null) botWiget = <Widget>[];
-  }
+  });
 
   ///Type of geocoder: Geocoder.Pelias || Geocoder.Photon || Geocoder.Nominatim
-  WeMapGeocoder geocoder;
+  final WeMapGeocoder geocoder;
 
-  WeMapSearchAPI searchAPI = WeMapSearchAPI();
+  final WeMapSearchAPI searchAPI = WeMapSearchAPI();
 
   ///Widget in top in page
-  List<Widget> topWiget;
+  final List<Widget> topWiget;
 
   ///Widget in bot in page
-  List<Widget> botWiget;
+  final List<Widget> botWiget;
 
   ///Need or not show my location in list of origin
-  bool showYourLocation;
+  final bool showYourLocation;
 
   ///Ex: "Vị trí của bạn"
-  String yourLocationText;
+  final String yourLocationText;
 
   ///Icon yourlocatin
-  String yourLocationWidget;
+  final Widget? yourLocationWidget;
 
   ///Need or not show my home in list of origin
-  bool showChooseOnMap;
+  final bool showChooseOnMap;
 
   ///Ex: "Chọn trên bản đồ"
-  String chooseOnMapText;
+  final String chooseOnMapText;
 
   ///Icon chooseOnMap
-  String chooseOnMapWidget;
+  final Widget? chooseOnMapWidget;
 
   ///hint text in TextField
-  String hintText;
+  final String hintText;
 
   ///The text will search when init
-  String searchValue;
+  final String? searchValue;
 
   /// The callback that is called when one Place is selected by the user.
   final void Function(WeMapPlace place) onSelected;
 
   /// The callback that is called when the user taps on my location type 2.
-  final void Function() onTapYourLocation;
+  final void Function()? onTapYourLocation;
 
   /// The callback that is called when the user taps on choose on map type 2.
-  final void Function() onTapChooseOnMap;
+  final void Function()? onTapChooseOnMap;
 
   /// The point around which you wish to retrieve place information.
   ///
@@ -81,13 +75,14 @@ class WeMapSearch extends StatefulWidget {
 
 class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStateMixin {
   //Text field controller
-  TextEditingController _textEditingController;
+  TextEditingController _textEditingController = TextEditingController();
 
   //Scroll controller of listview
-  ScrollController _scrollController;
+  ScrollController _scrollController = ScrollController();
 
   // Initialise outside the build method
   FocusNode searchNode = FocusNode();
+
   //Place when get data of API
   List _placesFromApi = [];
 
@@ -100,19 +95,16 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
   //loading status
   bool _connectivity = true;
 
-  Timer _debounce; //Debounce time to query API
+  Timer? _debounce; //Debounce time to query API
 
-  AnimationController _controller; //Controller of animated your search box
-  Animation _animation;
+  late AnimationController _controller; //Controller of animated your search box
+  late Animation _animation;
 
   @override
   void initState() {
-    _scrollController = ScrollController();
-    _textEditingController = TextEditingController();
-
     if (widget.searchValue != null) {
-      _textEditingController.text = widget.searchValue;
-      _autocompletePlace(widget.searchValue);
+      _textEditingController.text = widget.searchValue!;
+      _autocompletePlace(widget.searchValue!);
     }
 
     _scrollController.addListener(() {
@@ -137,12 +129,7 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
     });
 
     //Controller init and config
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(
-        milliseconds: 70,
-      ),
-    );
+    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: 70));
     _animation = Tween(begin: 2.0, end: 0.0).animate(_controller);
 
     getDataDb();
@@ -152,9 +139,7 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: searchBar2(),
-    );
+    return Scaffold(body: searchBar2());
   }
 
   Widget searchBar2() {
@@ -167,8 +152,7 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
           child: AnimatedContainer(
               duration: Duration(milliseconds: 200),
               transform: Matrix4.rotationX(_animation.value),
-              margin:
-                  EdgeInsets.only(top: 67 + MediaQuery.of(context).padding.top),
+              margin: EdgeInsets.only(top: 67 + MediaQuery.of(context).padding.top),
               child: StreamBuilder(
                   stream: streamPlace.stream,
                   builder: (context, snapdata) {
@@ -176,12 +160,11 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
                       controller: _scrollController,
                       padding: EdgeInsets.zero,
                       children: !_showClearButton
-                          ? _originList(snapdata.data ?? [])
+                          ? _originList(snapdata.data != null ? snapdata.data as List<WeMapPlace> : <WeMapPlace>[])
                           : !_connectivity
                               ? <Widget>[
                                   Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
                                       // Container(
@@ -192,31 +175,15 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
                                       //     strokeWidth: 2,
                                       //   ),
                                       // )
-                                      SizedBox(
-                                        height: 15,
-                                      ),
-                                      Icon(
-                                        Icons.warning,
-                                        color: Colors.red,
-                                      ),
-                                      SizedBox(
-                                        height: 15,
-                                      ),
-                                      Text(
-                                        wemap_notConnection,
-                                        style: TextStyle(
-                                          color: Colors.black38,
-                                        ),
-                                      )
+                                      SizedBox(height: 15),
+                                      Icon(Icons.warning, color: Colors.red),
+                                      SizedBox(height: 15),
+                                      Text(wemap_notConnection, style: TextStyle(color: Colors.black38))
                                     ],
                                   )
                                 ]
                               : _placesFromApi.map((place) {
-                                  return placeOption(
-                                    place,
-                                    _selectPlace,
-                                    isSearching: true,
-                                  );
+                                  return placeOption(place, _selectPlace, isSearching: true);
                                 }).toList(),
                     );
                   })),
@@ -224,9 +191,7 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            boxShadow: _showShadow
-                ? [BoxShadow(color: Colors.black38, blurRadius: 5)]
-                : null,
+            boxShadow: _showShadow ? [BoxShadow(color: Colors.black38, blurRadius: 5)] : null,
           ),
           child: Container(
             width: MediaQuery.of(context).size.width * 0.95,
@@ -275,10 +240,7 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
           Visibility(
             visible: _showClearButton,
             child: GestureDetector(
-              child: Icon(
-                Icons.clear,
-                color: Colors.black,
-              ),
+              child: Icon(Icons.clear, color: Colors.black),
               onTap: () {
                 _placesFromApi = [];
                 _textEditingController.clear();
@@ -300,25 +262,20 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
               padding: EdgeInsets.zero,
               onPressed: () {
                 Navigator.pop(context);
-                widget.onTapYourLocation();
+                widget.onTapYourLocation?.call();
               },
               child: ListTile(
                 leading: Padding(
                   padding: EdgeInsets.only(left: 8, right: 8),
                   child: widget.yourLocationWidget ??
                       CircleAvatar(
-                        child: Icon(
-                          Icons.my_location,
-                          size: 20,
-                        ),
+                        child: Icon(Icons.my_location, size: 20),
                         backgroundColor: Color(0xff91a5b0),
                         foregroundColor: Colors.white,
                         radius: 16,
                       ),
                 ),
-                title: Text(
-                  widget.yourLocationText,
-                ),
+                title: Text(widget.yourLocationText),
               ),
             ),
           ),
@@ -328,33 +285,25 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
                 padding: EdgeInsets.zero,
                 onPressed: () {
                   Navigator.pop(context);
-                  widget.onTapChooseOnMap();
+                  widget.onTapChooseOnMap?.call();
                 },
                 child: ListTile(
                   leading: Padding(
                     padding: EdgeInsets.only(left: 8, right: 8),
                     child: widget.chooseOnMapWidget ??
                         CircleAvatar(
-                          child: Icon(
-                            Icons.map,
-                            size: 20,
-                          ),
+                          child: Icon(Icons.map, size: 20),
                           backgroundColor: Color(0xff91a5b0),
                           foregroundColor: Colors.white,
                           radius: 16,
                         ),
                   ),
-                  title: Text(
-                    widget.chooseOnMapText,
-                  ),
+                  title: Text(widget.chooseOnMapText),
                 ),
               )),
           Visibility(
             visible: widget.showYourLocation || widget.showChooseOnMap,
-            child: Container(
-              height: 5,
-              color: Colors.black12,
-            ),
+            child: Container(height: 5, color: Colors.black12),
           ),
           Container(
             padding: EdgeInsets.only(left: 24, top: 16, bottom: 0, right: 24),
@@ -364,10 +313,7 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Flexible(
-                      flex: 2,
-                      child: Text(wemap_searchHistory),
-                    ),
+                    Flexible(flex: 2, child: Text(wemap_searchHistory)),
                     Visibility(
                       visible: allPlace.length != 0,
                       child: Flexible(
@@ -375,13 +321,7 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
                           child: CupertinoButton(
                             padding: EdgeInsets.all(0),
                             onPressed: () => deleteAllInHistory(),
-                            child: Text(
-                              wemap_deleteAll,
-                              style: TextStyle(
-                                color: Color.fromRGBO(0, 113, 188, 1),
-                                fontSize: 16,
-                              ),
-                            ),
+                            child: Text(wemap_deleteAll, style: TextStyle(color: Color.fromRGBO(0, 113, 188, 1), fontSize: 16)),
                           )),
                     )
                   ],
@@ -393,13 +333,8 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        SizedBox(
-                          height: 32,
-                        ),
-                        Text(
-                          wemap_searchRecommend,
-                          textAlign: TextAlign.center,
-                        ),
+                        SizedBox(height: 32),
+                        Text(wemap_searchRecommend, textAlign: TextAlign.center),
                         MaterialButton(
                           onPressed: () {
                             FocusScope.of(context).requestFocus(searchNode);
@@ -407,8 +342,7 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
                           child: Text(
                             wemap_searchNow,
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: Color.fromRGBO(0, 113, 188, 1)),
+                            style: TextStyle(color: Color.fromRGBO(0, 113, 188, 1)),
                           ),
                         ),
                       ],
@@ -420,14 +354,12 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
           ),
         ] +
         getHsIntoWidget(
-            previousSearchesList:
-                getPlaceHistory(DateQuery.PREVIOUSSEARCHES, allPlace, limit: 7),
-            beforeYesterdayList:
-                getPlaceHistory(DateQuery.BEFOREYESTERDAY, allPlace, limit: 7),
-            yesterdayList:
-                getPlaceHistory(DateQuery.YESTERDAY, allPlace, limit: 7),
-            todayList: getPlaceHistory(DateQuery.TODAY, allPlace, limit: 7),
-            selected: (WeMapPlace place) => _selectPlace(place)) +
+          previousSearchesList: getPlaceHistory(DateQuery.PREVIOUSSEARCHES, allPlace, limit: 7),
+          beforeYesterdayList: getPlaceHistory(DateQuery.BEFOREYESTERDAY, allPlace, limit: 7),
+          yesterdayList: getPlaceHistory(DateQuery.YESTERDAY, allPlace, limit: 7),
+          todayList: getPlaceHistory(DateQuery.TODAY, allPlace, limit: 7),
+          selected: _selectPlace,
+        ) +
         [
           Visibility(
             visible: allPlace.length > 7,
@@ -456,8 +388,7 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
   }
 
   void _selectPlace(WeMapPlace place) {
-    Navigator.pop(context);
-    // Calls the `onSelected` callback
+    Navigator.pop(context); // Calls the `onSelected` callback
     widget.onSelected(place);
     //Save db
     savePlace(place);
@@ -468,7 +399,7 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
   }
 
   void _autocompletePlace(String input) async {
-    if (_debounce?.isActive ?? false) _debounce.cancel();
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
     if (input.length > 0) {
       var connectivityResult = await (Connectivity().checkConnectivity());
       if (connectivityResult == ConnectivityResult.none) {
@@ -477,12 +408,11 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
         });
       } else {
         _debounce = Timer(Duration(milliseconds: 300), () async {
-          final predictions =
-              await widget.searchAPI.getSearchResult(input, widget.location, widget.geocoder);
+          final predictions = await widget.searchAPI.getSearchResult(input, widget.location, widget.geocoder);
           if (this.mounted)
             setState(() {
               _connectivity = true;
-              _placesFromApi = predictions ?? [];
+              _placesFromApi = predictions;
             });
         });
       }
@@ -492,16 +422,9 @@ class _WeMapSearchState extends State<WeMapSearch> with SingleTickerProviderStat
   InputDecoration _inputStyle() {
     return InputDecoration(
       hintText: widget.hintText,
-      hintStyle: TextStyle(
-        fontSize: 16,
-        color: Colors.black.withOpacity(0.35),
-      ),
+      hintStyle: TextStyle(fontSize: 16, color: Colors.black.withOpacity(0.35)),
       border: InputBorder.none,
-      contentPadding: EdgeInsets.only(
-        left: 20,
-        right: 16,
-        bottom: 4,
-      ),
+      contentPadding: EdgeInsets.only(left: 20, right: 16, bottom: 4),
     );
   }
 }
@@ -510,13 +433,7 @@ BoxDecoration containerDecorationBar1() {
   return BoxDecoration(
     color: Colors.white,
     borderRadius: BorderRadius.all(Radius.circular(8.0)),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black38,
-        offset: Offset(0, 1),
-        blurRadius: 0.9,
-      ),
-    ],
+    boxShadow: [BoxShadow(color: Colors.black38, offset: Offset(0, 1), blurRadius: 0.9)],
   );
 }
 
@@ -524,29 +441,20 @@ BoxDecoration containerDecorationBar2() {
   return BoxDecoration(
     color: Colors.white,
     borderRadius: BorderRadius.all(Radius.circular(8.0)),
-    border: Border.all(
-      color: Colors.black.withOpacity(0.1),
-      style: BorderStyle.solid,
-      width: 0.8,
-    ),
+    border: Border.all(color: Colors.black.withOpacity(0.1), style: BorderStyle.solid, width: 0.8),
   );
 }
 
 class MaterialPageRouteWithoutAnimation<T> extends MaterialPageRoute<T> {
   MaterialPageRouteWithoutAnimation({
-    @required WidgetBuilder builder,
-    RouteSettings settings,
+    required WidgetBuilder builder,
+    RouteSettings? settings,
     bool maintainState = true,
     bool fullscreenDialog = false,
-  }) : super(
-            builder: builder,
-            maintainState: maintainState,
-            settings: settings,
-            fullscreenDialog: fullscreenDialog);
+  }) : super(builder: builder, maintainState: maintainState, settings: settings, fullscreenDialog: fullscreenDialog);
 
   @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation, Widget child) {
+  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
     return child;
   }
 }
