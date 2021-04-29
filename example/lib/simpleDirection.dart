@@ -3,7 +3,7 @@ import 'package:wemapgl/wemapgl.dart';
 
 import 'ePage.dart';
 
-class SimpleDirectionPage extends ePage {
+class SimpleDirectionPage extends EPage {
   SimpleDirectionPage() : super(const Icon(Icons.directions), 'Simple Multiple Direction');
 
   @override
@@ -25,7 +25,7 @@ class DirectionAPIState extends State<DirectionAPI> {
   int _tripDistance = 0;
   int _tripTime = 0;
 
-  WeMapController mapController;
+  late WeMapController mapController;
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +41,7 @@ class DirectionAPIState extends State<DirectionAPI> {
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(bottom: 12.0),
-                  child: Text(
-                      "Trip distance: $_tripDistance m. Trip time estimate: $_tripTime ms"),
+                  child: Text("Trip distance: $_tripDistance m. Trip time estimate: $_tripTime ms"),
                 ),
                 Center(
                   child: SizedBox(
@@ -74,11 +73,11 @@ class DirectionAPIState extends State<DirectionAPI> {
   void onStyleLoadedCallback() async {
     List<LatLng> points = [];
 
-    points.add(LatLng(21.036751,105.782013)); //origin Point
+    points.add(LatLng(21.036751, 105.782013)); //origin Point
     points.add(LatLng(21.024412, 105.798115)); //way Point
-    points.add(LatLng(21.004880,105.817432)); //destination Point
+    points.add(LatLng(21.004880, 105.817432)); //destination Point
 
-    final json = await directionAPI.getResponseMultiRoute( 0, points); //0 = car, 1 = bike, 2 = foot
+    final json = await directionAPI.getResponseMultiRoute(0, points); //0 = car, 1 = bike, 2 = foot
     List<LatLng> _route = directionAPI.getRoute(json);
     List<LatLng> _waypoins = directionAPI.getWayPoints(json);
 
@@ -87,29 +86,19 @@ class DirectionAPIState extends State<DirectionAPI> {
       _tripTime = directionAPI.getTime(json);
     });
 
-    if (_route != null) {
-      await mapController.addLine(
-        LineOptions(
-          geometry: _route,
-          lineColor: "#0071bc",
-          lineWidth: 5.0,
-          lineOpacity: 1,
-        ),
-      );
-      await mapController.addCircle(CircleOptions(
-          geometry: _waypoins[0],
-          circleRadius: 8.0,
-          circleColor: '#d3d3d3',
-          circleStrokeWidth: 1.5,
-          circleStrokeColor: '#0071bc'));
-      for(int i=1; i<_waypoins.length; i++){
-        await mapController.addCircle(CircleOptions(
-            geometry: _waypoins[i],
-            circleRadius: 8.0,
-            circleColor: '#ffffff',
-            circleStrokeWidth: 1.5,
-            circleStrokeColor: '#0071bc'));
-      }
+    await mapController.addLine(
+      LineOptions(
+        geometry: _route,
+        lineColor: "#0071bc",
+        lineWidth: 5.0,
+        lineOpacity: 1,
+      ),
+    );
+    await mapController.addCircle(
+        CircleOptions(geometry: _waypoins[0], circleRadius: 8.0, circleColor: '#d3d3d3', circleStrokeWidth: 1.5, circleStrokeColor: '#0071bc'));
+    for (int i = 1; i < _waypoins.length; i++) {
+      await mapController.addCircle(
+          CircleOptions(geometry: _waypoins[i], circleRadius: 8.0, circleColor: '#ffffff', circleStrokeWidth: 1.5, circleStrokeColor: '#0071bc'));
     }
   }
 }

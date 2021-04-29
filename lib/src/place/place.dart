@@ -1,24 +1,24 @@
-
-
 part of wemapgl;
 
 enum WeMapGeocoder { Pelias, Photon, Nominatim, Explore }
 
 class WeMapPlace {
-  String description;
-  int placeId;
-  LatLng location;
-  String types;
-  String placeName;
-  String street;
-  String cityState;
-  String value;
-  String state;
-  DateTime lastUpdated;
-  //distance from focus.point to this point
-  double distance;
+  String? description;
+  int? placeId;
+  LatLng? location;
+  String? types;
+  String? placeName;
+  String? street;
+  String? cityState;
+  String? value;
+  String? state;
+  DateTime? lastUpdated;
 
-  Map extraTags;
+  //distance from focus.point to this point
+  double? distance;
+
+  Map? extraTags;
+
   void setExtraTags(Map _extraTags) {
     extraTags = _extraTags;
   }
@@ -44,12 +44,10 @@ class WeMapPlace {
       this.placeName = getName(place["properties"]);
       this.street = getStreet(place["properties"]);
       this.cityState = getState(place["properties"]);
-      this.state =
-          place["properties"]["city"] ?? place["properties"]["state"] ?? "";
+      this.state = place["properties"]["city"] ?? place["properties"]["state"] ?? "";
       this.placeId = place["properties"]["osm_id"];
       this.types = place["properties"]["osm_type"];
-      this.location = new LatLng(place["geometry"]["coordinates"][1],
-          place["geometry"]["coordinates"][0]);
+      this.location = LatLng(place["geometry"]["coordinates"][1], place["geometry"]["coordinates"][0]);
       this.fullJSON = place;
     } catch (e) {
       print("Du lieu json photon khong hop le !");
@@ -68,13 +66,10 @@ class WeMapPlace {
       this.placeName = getName(place["properties"]);
       this.street = getStreet(place["properties"]);
       this.cityState = getState(place["properties"]);
-      this.state =
-          place["properties"]["county"] ?? place["properties"]["region"] ?? "";
-      this.placeId = int.parse(
-          regExp.stringMatch(place["properties"]["id"] ?? "").toString());
+      this.state = place["properties"]["county"] ?? place["properties"]["region"] ?? "";
+      this.placeId = int.parse(regExp.stringMatch(place["properties"]["id"] ?? "").toString());
       this.types = place["properties"]["osm_type"];
-      this.location = new LatLng(place["geometry"]["coordinates"][1],
-          place["geometry"]["coordinates"][0]);
+      this.location = new LatLng(place["geometry"]["coordinates"][1], place["geometry"]["coordinates"][0]);
       this.distance = place["properties"]["distance"];
       this.fullJSON = place;
     } catch (e) {
@@ -89,12 +84,10 @@ class WeMapPlace {
       this.placeName = getNameNominatim(place["properties"]);
       this.street = getStreet(place["properties"]);
       this.cityState = getState(place["properties"]);
-      this.state =
-          place["properties"]["city"] ?? place["properties"]["state"] ?? "";
+      this.state = place["properties"]["city"] ?? place["properties"]["state"] ?? "";
       this.placeId = place["properties"]["osm_id"];
       this.types = place["properties"]["category"];
-      this.location = new LatLng(place["geometry"]["coordinates"][1],
-          place["geometry"]["coordinates"][0]);
+      this.location = new LatLng(place["geometry"]["coordinates"][1], place["geometry"]["coordinates"][0]);
       this.fullJSON = place;
     } catch (e) {
       print("Du lieu json nominatim khong hop le !");
@@ -111,8 +104,7 @@ class WeMapPlace {
       this.placeId = int.parse(place["osm_id"].toString());
       this.types = place["osm_type"];
       this.value = place["osm_value"];
-      this.location =
-          new LatLng(double.parse(place['lat']), double.parse(place['lon']));
+      this.location = new LatLng(double.parse(place['lat']), double.parse(place['lon']));
       this.fullJSON = place;
     } catch (e) {
       print("Du lieu json explore khong hop le !" + e.toString());
@@ -121,8 +113,7 @@ class WeMapPlace {
 
   String getDescription(Map<String, dynamic> properties) {
     List<String> names = [];
-    if (properties["name"] != null && properties["name"].trim().length != 0)
-      names.add(properties["name"]);
+    if (properties["name"] != null && properties["name"].trim().length != 0) names.add(properties["name"]);
     if (properties["housenumber"] != null && properties["street"] != null) {
       names.add('số ' + properties["housenumber"] + ' ' + properties["street"]);
     } else if (properties["street"] != null) {
@@ -135,8 +126,7 @@ class WeMapPlace {
 
   String getDescriptionPelias(Map<String, dynamic> properties) {
     List<String> names = [];
-    if (properties["name"] != null && properties["name"].trim().length != 0)
-      names.add(properties["name"]);
+    if (properties["name"] != null && properties["name"].trim().length != 0) names.add(properties["name"]);
     if (properties["housenumber"] != null && properties["street"] != null) {
       names.add('số ' + properties["housenumber"] + ' ' + properties["street"]);
     } else if (properties["street"] != null) {
@@ -149,15 +139,13 @@ class WeMapPlace {
 
   String getDescriptionNominatim(Map<String, dynamic> properties) {
     String description = "";
-    if (properties["display_name"] != null)
-      description = properties["display_name"];
+    if (properties["display_name"] != null) description = properties["display_name"];
     return description;
   }
 
   String getDescriptionExplore(Map<String, dynamic> address, String type) {
     List<String> names = [];
-    if (address[type] != null && address[type].trim().length != 0)
-      names.add(address[type]);
+    if (address[type] != null && address[type].trim().length != 0) names.add(address[type]);
     if (address["house_number"] != null && address["road"] != null) {
       names.add('số ' + address["house_number"] + ' ' + address["road"]);
     } else if (address["road"] != null) {
@@ -171,12 +159,10 @@ class WeMapPlace {
   }
 
   String getName(Map<String, dynamic> properties) {
-    if (properties["osm_value"] != null &&
-        properties["osm_value"] == "bus_stop") {
+    if (properties["osm_value"] != null && properties["osm_value"] == "bus_stop") {
       return "Trạm xe buýt ${properties["name"]}";
     } else {
-      if (properties["name"] != null && properties["name"].trim().length != 0)
-        return properties["name"];
+      if (properties["name"] != null && properties["name"].trim().length != 0) return properties["name"];
       return getStreet(properties);
     }
   }
@@ -185,8 +171,7 @@ class WeMapPlace {
     if (properties["type"] == "bus_stop") {
       return "Trạm xe buýt ${properties["name"]}";
     } else {
-      if (properties["name"] != null && properties["name"].trim().length != 0)
-        return properties["name"];
+      if (properties["name"] != null && properties["name"].trim().length != 0) return properties["name"];
       return getDescriptionNominatim(properties);
     }
   }
@@ -195,8 +180,7 @@ class WeMapPlace {
     if (type == "bus_station") {
       return "Trạm xe buýt";
     } else {
-      if (address[type] != null && address[type].trim().length != 0)
-        return address[type];
+      if (address[type] != null && address[type].trim().length != 0) return address[type];
       return getStreet(address);
     }
   }
@@ -254,8 +238,8 @@ class WeMapPlace {
     return {
       'id': this.placeId,
       'name': this.placeName,
-      'lat': this.location.latitude,
-      'lon': this.location.longitude,
+      'lat': this.location!.latitude,
+      'lon': this.location!.longitude,
       'cityState': this.cityState,
       'street': this.street,
       'description': this.description,
@@ -275,13 +259,11 @@ class WeMapPlace {
   }
 }
 
-
 void weRequestLocation() async {
   final location = GPSService.Location();
   final hasPermissions = await location.hasPermission();
   final serviceEnabled = await location.serviceEnabled();
   if (!serviceEnabled)
     await location.requestService();
-  else if (hasPermissions != GPSService.PermissionStatus.GRANTED)
-    await location.requestPermission();
+  else if (hasPermissions != GPSService.PermissionStatus.granted) await location.requestPermission();
 }

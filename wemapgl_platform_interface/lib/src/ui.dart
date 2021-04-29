@@ -5,8 +5,7 @@
 part of wemapgl_platform_interface;
 
 class WeMapStyles {
-  static String WEMAP_VECTOR_STYLE =
-  "https://apis.wemap.asia/vector-tiles/styles/osm-bright/style.json?key=${Configuration.weMapKey}";
+  static String WEMAP_VECTOR_STYLE = "https://apis.wemap.asia/vector-tiles/styles/osm-bright/style.json?key=${Configuration.weMapKey}";
 
   static String WEMAP_RASTER_STYLE = "https://apis.wemap.asia/raster-tiles/styles/osm-bright/{x}/{y}/{z}@2x.png?key=${Configuration.weMapKey}";
 }
@@ -46,7 +45,7 @@ class CameraTargetBounds {
   /// The geographical bounding box for the map camera target.
   ///
   /// A null value means the camera target is unbounded.
-  final LatLngBounds bounds;
+  final LatLngBounds? bounds;
 
   /// Unbounded camera target.
   static const CameraTargetBounds unbounded = CameraTargetBounds(null);
@@ -75,18 +74,16 @@ class CameraTargetBounds {
 // distinguishing between specifying unbounded zooming (null `minZoom` and
 // `maxZoom`) from not specifying anything (null `MinMaxZoomPreference`).
 class MinMaxZoomPreference {
-  const MinMaxZoomPreference(this.minZoom, this.maxZoom)
-      : assert(minZoom == null || maxZoom == null || minZoom <= maxZoom);
+  const MinMaxZoomPreference(this.minZoom, this.maxZoom) : assert(minZoom == null || maxZoom == null || minZoom <= maxZoom);
 
   /// The preferred minimum zoom level or null, if unbounded from below.
-  final double minZoom;
+  final double? minZoom;
 
   /// The preferred maximum zoom level or null, if unbounded from above.
-  final double maxZoom;
+  final double? maxZoom;
 
   /// Unbounded zooming.
-  static const MinMaxZoomPreference unbounded =
-      MinMaxZoomPreference(null, null);
+  static const MinMaxZoomPreference unbounded = MinMaxZoomPreference(null, null);
 
   dynamic toJson() => <dynamic>[minZoom, maxZoom];
 

@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:wemapgl/wemapgl.dart';
+
 import 'language_vi.dart';
 
 String key = 'key=${Configuration.weMapKey}';
@@ -21,13 +21,10 @@ String apiSearch(String input, LatLng latLng, WeMapGeocoder geocoder) {
   switch (geocoder) {
     case WeMapGeocoder.Nominatim:
       return "https://apis.wemap.asia/geocode-2/search.php?q=$input&lat=${latLng.latitude}&lon=${latLng.longitude}&location_bias_scale=2&polygon_geojson=1&format=geojson&$key";
-      break;
     case WeMapGeocoder.Photon:
       return 'https://apis.wemap.asia/geocode-3/api?q=$input&lat=${latLng.latitude}&lon=${latLng.longitude}&location_bias_scale=2&$key';
-      break;
     default:
       return 'https://apis.wemap.asia/geocode-1/autocomplete?text=$input&focus.point.lat=${latLng.latitude}&focus.point.lon=${latLng.longitude}&location_bias_scale=2&$key';
-      break;
   }
 }
 
@@ -38,7 +35,8 @@ String apiReverse(LatLng latLng) {
 }
 
 ///Locality
-String apiLocality(LatLng latLng) => "https://apis.wemap.asia/geocode-1/reverse?point.lat=${latLng.latitude}&point.lon=${latLng.longitude}&$key&layers=locality";
+String apiLocality(LatLng latLng) =>
+    "https://apis.wemap.asia/geocode-1/reverse?point.lat=${latLng.latitude}&point.lon=${latLng.longitude}&$key&layers=locality";
 
 ///Lookup SDK
 String apiLookup(int osmID) {
@@ -61,8 +59,7 @@ String apiWeatherForecast(int cityId) {
 String apiExplore(String type, LatLng latLng) {
   Configuration.validateWeMapKey();
   String url;
-  String baseUrl =
-      'https://apis.wemap.asia/we-tools/explore?lat=${latLng.latitude}&lon=${latLng.longitude}&$key';
+  String baseUrl = 'https://apis.wemap.asia/we-tools/explore?lat=${latLng.latitude}&lon=${latLng.longitude}&$key';
   switch (type) {
     case 'cafe':
       url = '$baseUrl&k=amenity&v=cafe&limit=20&d=1000';
@@ -89,8 +86,7 @@ String apiExplore(String type, LatLng latLng) {
       url = '$baseUrl&k=amenity&v=library&limit=20&d=1000';
       break;
     default:
-      url =
-          'https://apis.wemap.asia/we-tools/explore?$key&lat=21.0381165&lon=105.7820646&k=amenity&v=cafe&limit=20&d=1000';
+      url = 'https://apis.wemap.asia/we-tools/explore?$key&lat=21.0381165&lon=105.7820646&k=amenity&v=cafe&limit=20&d=1000';
       break;
   }
   return url;
@@ -142,4 +138,3 @@ String aqiRate(int aqi) {
   else if (aqi <= 300) return wemap_aqiVeryUnhealthy;
   return wemap_aqiHazardous;
 }
-

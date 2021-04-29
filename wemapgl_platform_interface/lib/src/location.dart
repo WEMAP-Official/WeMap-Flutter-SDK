@@ -10,10 +10,7 @@ class LatLng {
   /// The longitude is normalized to the half-open interval from -180.0
   /// (inclusive) to +180.0 (exclusive)
   const LatLng(double latitude, double longitude)
-      : assert(latitude != null),
-        assert(longitude != null),
-        latitude =
-            (latitude < -90.0 ? -90.0 : (90.0 < latitude ? 90.0 : latitude)),
+      : latitude = (latitude < -90.0 ? -90.0 : (90.0 < latitude ? 90.0 : latitude)),
         longitude = (longitude + 180.0) % 360.0 - 180.0;
 
   /// The latitude in degrees between -90.0 and 90.0, both inclusive.
@@ -26,7 +23,7 @@ class LatLng {
     return <double>[latitude, longitude];
   }
 
-  static LatLng _fromJson(dynamic json) {
+  static LatLng? _fromJson(dynamic? json) {
     if (json == null) {
       return null;
     }
@@ -58,10 +55,7 @@ class LatLngBounds {
   ///
   /// The latitude of the southwest corner cannot be larger than the
   /// latitude of the northeast corner.
-  LatLngBounds({@required this.southwest, @required this.northeast})
-      : assert(southwest != null),
-        assert(northeast != null),
-        assert(southwest.latitude <= northeast.latitude);
+  LatLngBounds({required this.southwest, required this.northeast}) : assert(southwest.latitude <= northeast.latitude);
 
   /// The southwest corner of the rectangle.
   final LatLng southwest;
@@ -74,14 +68,11 @@ class LatLngBounds {
   }
 
   @visibleForTesting
-  static LatLngBounds fromList(dynamic json) {
+  static LatLngBounds? fromList(dynamic json) {
     if (json == null) {
       return null;
     }
-    return LatLngBounds(
-      southwest: LatLng._fromJson(json[0]),
-      northeast: LatLng._fromJson(json[1]),
-    );
+    return LatLngBounds(southwest: LatLng._fromJson(json[0])!, northeast: LatLng._fromJson(json[1])!);
   }
 
   @override
@@ -91,9 +82,7 @@ class LatLngBounds {
 
   @override
   bool operator ==(Object o) {
-    return o is LatLngBounds &&
-        o.southwest == southwest &&
-        o.northeast == northeast;
+    return o is LatLngBounds && o.southwest == southwest && o.northeast == northeast;
   }
 
   @override
@@ -103,11 +92,7 @@ class LatLngBounds {
 /// A geographical area representing a non-aligned quadrilateral
 /// This class does not wrap values to the world bounds
 class LatLngQuad {
-  LatLngQuad({@required this.topLeft, @required this.topRight, @required this.bottomRight, @required this.bottomLeft})
-      : assert(topLeft != null),
-        assert(topRight != null),
-        assert(bottomRight != null),
-        assert(bottomLeft != null);
+  LatLngQuad({required this.topLeft, required this.topRight, required this.bottomRight, required this.bottomLeft});
 
   final LatLng topLeft;
 
@@ -122,15 +107,15 @@ class LatLngQuad {
   }
 
   @visibleForTesting
-  static LatLngQuad fromList(dynamic json) {
+  static LatLngQuad? fromList(dynamic json) {
     if (json == null) {
       return null;
     }
     return LatLngQuad(
-      topLeft: LatLng._fromJson(json[0]),
-      topRight: LatLng._fromJson(json[1]),
-      bottomRight: LatLng._fromJson(json[2]),
-      bottomLeft: LatLng._fromJson(json[3]),
+      topLeft: LatLng._fromJson(json[0])!,
+      topRight: LatLng._fromJson(json[1])!,
+      bottomRight: LatLng._fromJson(json[2])!,
+      bottomLeft: LatLng._fromJson(json[3])!,
     );
   }
 
@@ -141,16 +126,11 @@ class LatLngQuad {
 
   @override
   bool operator ==(Object o) {
-    return o is LatLngQuad &&
-        o.topLeft == topLeft &&
-        o.topRight == topRight &&
-        o.bottomRight == bottomRight &&
-        o.bottomLeft == bottomLeft;
+    return o is LatLngQuad && o.topLeft == topLeft && o.topRight == topRight && o.bottomRight == bottomRight && o.bottomLeft == bottomLeft;
   }
 
   @override
   int get hashCode => hashValues(topLeft, topRight, bottomRight, bottomLeft);
-  
 }
 
 /// User's observed location
@@ -177,11 +157,11 @@ class UserLocation {
   final DateTime timestamp;
 
   const UserLocation(
-      {@required this.position,
-      @required this.altitude,
-      @required this.bearing,
-      @required this.speed,
-      @required this.horizontalAccuracy,
-      @required this.verticalAccuracy,
-      @required this.timestamp});
+      {required this.position,
+      required this.altitude,
+      required this.bearing,
+      required this.speed,
+      required this.horizontalAccuracy,
+      required this.verticalAccuracy,
+      required this.timestamp});
 }

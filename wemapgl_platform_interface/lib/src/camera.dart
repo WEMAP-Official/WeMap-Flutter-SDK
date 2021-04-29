@@ -5,8 +5,8 @@ part of wemapgl_platform_interface;
 /// location, its [zoom] level, [tilt] angle, and [bearing].
 class CameraPosition {
   const CameraPosition({
+    required this.target,
     this.bearing = 0.0,
-    @required this.target,
     this.tilt = 0.0,
     this.zoom = 0.0,
   })  : assert(bearing != null),
@@ -18,10 +18,10 @@ class CameraPosition {
   ///
   /// A bearing of 0.0, the default, means the camera points north.
   /// A bearing of 90.0 means the camera points east.
-  final double bearing;
+  final double? bearing;
 
   /// The geographical location that the camera is pointing at.
-  final LatLng target;
+  final LatLng? target;
 
   /// The angle, in degrees, of the camera angle from the nadir.
   ///
@@ -31,7 +31,7 @@ class CameraPosition {
   /// The maximum tilt value depends on the current zoom level. Values beyond
   /// the supported range are allowed, but on applying them to a map they will
   /// be silently clamped to the supported range.
-  final double tilt;
+  final double? tilt;
 
   /// The zoom level of the camera.
   ///
@@ -45,17 +45,17 @@ class CameraPosition {
   /// The supported zoom level range depends on the map data and device. Values
   /// beyond the supported range are allowed, but on applying them to a map they
   /// will be silently clamped to the supported range.
-  final double zoom;
+  final double? zoom;
 
   dynamic toMap() => <String, dynamic>{
         'bearing': bearing,
-        'target': target.toJson(),
+        'target': target?.toJson(),
         'tilt': tilt,
         'zoom': zoom,
       };
 
   @visibleForTesting
-  static CameraPosition fromMap(dynamic json) {
+  static CameraPosition? fromMap(dynamic json) {
     if (json == null) {
       return null;
     }
@@ -72,18 +72,14 @@ class CameraPosition {
     if (identical(this, other)) return true;
     if (runtimeType != other.runtimeType) return false;
     final CameraPosition typedOther = other;
-    return bearing == typedOther.bearing &&
-        target == typedOther.target &&
-        tilt == typedOther.tilt &&
-        zoom == typedOther.zoom;
+    return bearing == typedOther.bearing && target == typedOther.target && tilt == typedOther.tilt && zoom == typedOther.zoom;
   }
 
   @override
   int get hashCode => hashValues(bearing, target, tilt, zoom);
 
   @override
-  String toString() =>
-      'CameraPosition(bearing: $bearing, target: $target, tilt: $tilt, zoom: $zoom)';
+  String toString() => 'CameraPosition(bearing: $bearing, target: $target, tilt: $tilt, zoom: $zoom)';
 }
 
 /// Defines a camera move, supporting absolute moves as well as moves relative
@@ -104,14 +100,12 @@ class CameraUpdate {
     return CameraUpdate._(<dynamic>['newLatLng', latLng.toJson()]);
   }
 
-
   /// Returns a camera update that transforms the camera so that the specified
   /// geographical bounding box is centered in the map view at the greatest
   /// possible zoom level. A non-zero [left], [top], [right] and [bottom] padding
-  /// insets the bounding box from the map view's edges. 
+  /// insets the bounding box from the map view's edges.
   /// The camera's new tilt and bearing will both be 0.0.
-  static CameraUpdate newLatLngBounds(LatLngBounds bounds,
-      {double left = 0, double top = 0, double right = 0, double bottom = 0}) {
+  static CameraUpdate newLatLngBounds(LatLngBounds bounds, {double left = 0, double top = 0, double right = 0, double bottom = 0}) {
     return CameraUpdate._(<dynamic>[
       'newLatLngBounds',
       bounds.toList(),
@@ -145,7 +139,7 @@ class CameraUpdate {
   /// Returns a camera update that modifies the camera zoom level by the
   /// specified amount. The optional [focus] is a screen point whose underlying
   /// geographical location should be invariant, if possible, by the movement.
-  static CameraUpdate zoomBy(double amount, [Offset focus]) {
+  static CameraUpdate zoomBy(double amount, [Offset? focus]) {
     if (focus == null) {
       return CameraUpdate._(<dynamic>['zoomBy', amount]);
     } else {

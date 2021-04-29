@@ -1,11 +1,9 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:wemapgl/wemapgl.dart';
+
 import 'ePage.dart';
 
-class FullMapPage extends ePage {
+class FullMapPage extends EPage{
   FullMapPage() : super(const Icon(Icons.map), 'Full screen map');
 
   @override
@@ -22,13 +20,12 @@ class FullMap extends StatefulWidget {
 }
 
 class FullMapState extends State<FullMap> {
-  WeMapController mapController;
+  late WeMapController mapController;
   int searchType = 1; //Type of search bar
   String searchInfoPlace = "Tìm kiếm ở đây"; //Hint text for InfoBar
-  String searchPlaceName;
   LatLng myLatLng = LatLng(21.038282, 105.782885);
   bool reverse = true;
-  WeMapPlace place;
+  WeMapPlace? place;
 
   void _onMapCreated(WeMapController controller) {
     mapController = controller;
@@ -41,7 +38,7 @@ class FullMapState extends State<FullMap> {
         children: <Widget>[
           WeMap(
             onMapClick: (point, latlng, _place) async {
-              place = await _place;
+              place = _place;
             },
             onPlaceCardClose: () {
               // print("Place Card closed");
@@ -62,18 +59,15 @@ class FullMapState extends State<FullMap> {
               });
               mapController.moveCamera(
                 CameraUpdate.newCameraPosition(
-                  CameraPosition(
-                    target: place.location,
-                    zoom: 14.0,
-                  ),
+                  CameraPosition(target: place?.location, zoom: 14.0),
                 ),
               );
-              mapController.showPlaceCard(place);
+              mapController.showPlaceCard?.call(place);
             },
             onClearInput: () {
               setState(() {
                 place = null;
-                mapController.showPlaceCard(place);
+                mapController.showPlaceCard?.call(place);
               });
             },
           ),

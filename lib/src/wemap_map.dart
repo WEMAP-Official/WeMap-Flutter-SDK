@@ -7,39 +7,39 @@ part of wemapgl;
 typedef void MapCreatedCallback(WeMapController controller);
 
 class WeMap extends StatefulWidget {
-  WeMap({
-    @required this.initialCameraPosition,
-    this.onMapCreated,
-    this.onStyleLoadedCallback,
-    this.gestureRecognizers,
-    this.compassEnabled = true,
-    this.cameraTargetBounds = CameraTargetBounds.unbounded,
-    this.styleString,
-    this.minMaxZoomPreference = MinMaxZoomPreference.unbounded,
-    this.rotateGesturesEnabled = true,
-    this.scrollGesturesEnabled = true,
-    this.zoomGesturesEnabled = true,
-    this.tiltGesturesEnabled = true,
-    this.trackCameraPosition = false,
-    this.myLocationEnabled = false,
-    this.myLocationTrackingMode = MyLocationTrackingMode.None,
-    this.myLocationRenderMode = MyLocationRenderMode.COMPASS,
-    this.logoViewMargins = const Point(0, 0),
-    this.compassViewPosition,
-    this.compassViewMargins,
-    this.attributionButtonMargins,
-    this.onMapClick,
-    this.onUserLocationUpdated,
-    this.onMapLongClick,
-    this.onCameraTrackingDismissed,
-    this.onCameraTrackingChanged,
-    this.onCameraIdle,
-    this.onMapIdle,
-    this.reverse = false,
-    this.showReverseClearButton = true,
-    this.onPlaceCardClose,
-    this.destinationIcon
-  }) : assert(initialCameraPosition != null);
+  WeMap(
+      {@required this.initialCameraPosition,
+      this.onMapCreated,
+      this.onStyleLoadedCallback,
+      this.gestureRecognizers,
+      this.compassEnabled = true,
+      this.cameraTargetBounds = CameraTargetBounds.unbounded,
+      this.styleString,
+      this.minMaxZoomPreference = MinMaxZoomPreference.unbounded,
+      this.rotateGesturesEnabled = true,
+      this.scrollGesturesEnabled = true,
+      this.zoomGesturesEnabled = true,
+      this.tiltGesturesEnabled = true,
+      this.trackCameraPosition = false,
+      this.myLocationEnabled = false,
+      this.myLocationTrackingMode = MyLocationTrackingMode.None,
+      this.myLocationRenderMode = MyLocationRenderMode.COMPASS,
+      this.logoViewMargins = const Point(0, 0),
+      this.compassViewPosition,
+      this.compassViewMargins,
+      this.attributionButtonMargins,
+      this.onMapClick,
+      this.onUserLocationUpdated,
+      this.onMapLongClick,
+      this.onCameraTrackingDismissed,
+      this.onCameraTrackingChanged,
+      this.onCameraIdle,
+      this.onMapIdle,
+      this.reverse = false,
+      this.showReverseClearButton = true,
+      this.onPlaceCardClose,
+      this.destinationIcon})
+      : assert(initialCameraPosition != null);
 
   /// default is false,
   /// if true the Place Card at the bottom will be called.
@@ -49,17 +49,17 @@ class WeMap extends StatefulWidget {
 
   /// The callback function that is called when close this place card.
   /// If reverse is true, you need to declare onCardClose.
-  final void Function() onPlaceCardClose;
+  final void Function()? onPlaceCardClose;
 
   /// Please note: you should only add annotations (e.g. symbols or circles) after `onStyleLoadedCallback` has been called.
-  final MapCreatedCallback onMapCreated;
+  final MapCreatedCallback? onMapCreated;
 
   /// Called when the map style has been successfully loaded and the annotation managers have been enabled.
   /// Please note: you should only add annotations (e.g. symbols or circles) after this callback has been called.
-  final OnStyleLoadedCallback onStyleLoadedCallback;
+  final OnStyleLoadedCallback? onStyleLoadedCallback;
 
   /// The initial position of the map's camera.
-  final CameraPosition initialCameraPosition;
+  final CameraPosition? initialCameraPosition;
 
   /// True if the map should show a compass when rotated.
   final bool compassEnabled;
@@ -67,7 +67,7 @@ class WeMap extends StatefulWidget {
   /// Geographical bounding box for the camera target.
   final CameraTargetBounds cameraTargetBounds;
 
-  String styleString;
+  final String? styleString;
 
   /// Preferred bounds for the camera zoom level.
   ///
@@ -126,11 +126,11 @@ class WeMap extends StatefulWidget {
 
   final Point logoViewMargins;
 
-  final CompassViewPosition compassViewPosition;
+  final CompassViewPosition? compassViewPosition;
 
-  final Point compassViewMargins;
+  final Point? compassViewMargins;
 
-  final Point attributionButtonMargins;
+  final Point? attributionButtonMargins;
 
   /// Which gestures should be consumed by the map.
   ///
@@ -141,23 +141,23 @@ class WeMap extends StatefulWidget {
   ///
   /// When this set is empty or null, the map will only handle pointer events for gestures that
   /// were not claimed by any other gesture recognizer.
-  final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
+  final Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
 
-  final OnMapClickCallback onMapClick;
-  final OnMapClickCallback onMapLongClick;
+  final OnMapClickCallback? onMapClick;
+  final OnMapClickCallback? onMapLongClick;
 
   /// While the `myLocationEnabled` property is set to `true`, this method is
   /// called whenever a new location update is received by the map view.
-  final OnUserLocationUpdated onUserLocationUpdated;
+  final OnUserLocationUpdated? onUserLocationUpdated;
 
   /// Called when the map's camera no longer follows the physical device location, e.g. because the user moved the map
-  final OnCameraTrackingDismissedCallback onCameraTrackingDismissed;
+  final OnCameraTrackingDismissedCallback? onCameraTrackingDismissed;
 
   /// Called when the location tracking mode changes
-  final OnCameraTrackingChangedCallback onCameraTrackingChanged;
+  final OnCameraTrackingChangedCallback? onCameraTrackingChanged;
 
   // Called when camera movement has ended.
-  final OnCameraIdleCallback onCameraIdle;
+  final OnCameraIdleCallback? onCameraIdle;
 
   /// Called when map view is entering an idle state, and no more drawing will
   /// be necessary until new data is loaded or there is some interaction with
@@ -165,49 +165,47 @@ class WeMap extends StatefulWidget {
   /// * No camera transitions are in progress
   /// * All currently requested tiles have loaded
   /// * All fade/transition animations have completed
-  final OnMapIdleCallback onMapIdle;
+  final OnMapIdleCallback? onMapIdle;
 
-  final String destinationIcon;
+  final String? destinationIcon;
 
   @override
   State createState() => _WeMapState();
 }
 
 class _WeMapState extends State<WeMap> {
-  final Completer<WeMapController> _controller =
-      Completer<WeMapController>();
+  final Completer<WeMapController> _controller = Completer<WeMapController>();
 
-  _WeMapOptions _wemapMapOptions;
-  final WeMapGlPlatform _WeMapGlPlatform = WeMapGlPlatform.createInstance();
+  late _WeMapOptions _weMapMapOptions;
+  late String _styleString;
+  final WeMapGlPlatform _weMapGlPlatform = WeMapGlPlatform.createInstance();
 
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> creationParams = <String, dynamic>{
-      'initialCameraPosition': widget.initialCameraPosition?.toMap(),
+      'initialCameraPosition': widget.initialCameraPosition!.toMap(),
       'options': _WeMapOptions.fromWidget(widget).toMap(),
       'logoViewMarginsY': 10 + widget.logoViewMargins.y.toDouble(),
-      'logoViewMarginsX': 4 + widget.logoViewMargins.x.toDouble() 
+      'logoViewMarginsX': 4 + widget.logoViewMargins.x.toDouble()
     };
-    return _WeMapGlPlatform.buildView(
-        creationParams, onPlatformViewCreated, widget.gestureRecognizers);
+    return _weMapGlPlatform.buildView(creationParams, onPlatformViewCreated, widget.gestureRecognizers);
   }
 
   @override
   void initState() {
     super.initState();
-    if(widget.styleString == null)
-      widget.styleString = WeMapStyles.WEMAP_VECTOR_STYLE;
-    _wemapMapOptions = _WeMapOptions.fromWidget(widget);
+    _styleString = (widget.styleString ?? WeMapStyles.WEMAP_VECTOR_STYLE);
+    // if (widget.styleString == null) widget.styleString = WeMapStyles.WEMAP_VECTOR_STYLE;
+    _weMapMapOptions = _WeMapOptions.fromWidget(widget);
   }
 
   @override
   void didUpdateWidget(WeMap oldWidget) {
     super.didUpdateWidget(oldWidget);
     final _WeMapOptions newOptions = _WeMapOptions.fromWidget(widget);
-    final Map<String, dynamic> updates =
-        _wemapMapOptions.updatesMap(newOptions);
+    final Map<String, dynamic> updates = _weMapMapOptions.updatesMap(newOptions);
     _updateOptions(updates);
-    _wemapMapOptions = newOptions;
+    _weMapMapOptions = newOptions;
   }
 
   void _updateOptions(Map<String, dynamic> updates) async {
@@ -219,29 +217,25 @@ class _WeMapState extends State<WeMap> {
   }
 
   Future<void> onPlatformViewCreated(int id) async {
-    WeMapGlPlatform.addInstance(id, _WeMapGlPlatform);
-    final WeMapController controller = WeMapController.init(
-      id,
-      widget.initialCameraPosition,
-      onStyleLoadedCallback: () {
-        if (_controller.isCompleted) {
-          widget.onStyleLoadedCallback();
-        } else {
-          _controller.future.then((_) => widget.onStyleLoadedCallback());
-        }
-      },
+    WeMapGlPlatform.addInstance(id, _weMapGlPlatform);
+    final WeMapController controller = WeMapController.init(id, widget.initialCameraPosition!, onStyleLoadedCallback: () {
+      if (_controller.isCompleted) {
+        widget.onStyleLoadedCallback?.call();
+      } else {
+        _controller.future.then((_) => widget.onStyleLoadedCallback?.call());
+      }
+    },
         onMapClick: widget.onMapClick,
         onUserLocationUpdated: widget.onUserLocationUpdated,
         onMapLongClick: widget.onMapLongClick,
         onCameraTrackingDismissed: widget.onCameraTrackingDismissed,
         onCameraTrackingChanged: widget.onCameraTrackingChanged,
         onCameraIdle: widget.onCameraIdle,
-        onMapIdle: widget.onMapIdle
-    );
+        onMapIdle: widget.onMapIdle);
     await WeMapController.initPlatform(id);
     _controller.complete(controller);
     if (widget.onMapCreated != null) {
-      widget.onMapCreated(controller);
+      widget.onMapCreated!(controller);
     }
   }
 }
@@ -291,37 +285,37 @@ class _WeMapOptions {
     );
   }
 
-  final bool compassEnabled;
+  final bool? compassEnabled;
 
-  final CameraTargetBounds cameraTargetBounds;
+  final CameraTargetBounds? cameraTargetBounds;
 
-  final String styleString;
+  final String? styleString;
 
-  final MinMaxZoomPreference minMaxZoomPreference;
+  final MinMaxZoomPreference? minMaxZoomPreference;
 
-  final bool rotateGesturesEnabled;
+  final bool? rotateGesturesEnabled;
 
-  final bool scrollGesturesEnabled;
+  final bool? scrollGesturesEnabled;
 
-  final bool tiltGesturesEnabled;
+  final bool? tiltGesturesEnabled;
 
-  final bool trackCameraPosition;
+  final bool? trackCameraPosition;
 
-  final bool zoomGesturesEnabled;
+  final bool? zoomGesturesEnabled;
 
-  final bool myLocationEnabled;
+  final bool? myLocationEnabled;
 
-  final MyLocationTrackingMode myLocationTrackingMode;
+  final MyLocationTrackingMode? myLocationTrackingMode;
 
-  final MyLocationRenderMode myLocationRenderMode;
+  final MyLocationRenderMode? myLocationRenderMode;
 
-  final Point logoViewMargins;
+  final Point? logoViewMargins;
 
-  final CompassViewPosition compassViewPosition;
+  final CompassViewPosition? compassViewPosition;
 
-  final Point compassViewMargins;
+  final Point? compassViewMargins;
 
-  final Point attributionButtonMargins;
+  final Point? attributionButtonMargins;
 
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
@@ -332,7 +326,7 @@ class _WeMapOptions {
       }
     }
 
-    List<dynamic> pointToArray(Point fieldName) {
+    List<dynamic>? pointToArray(Point? fieldName) {
       if (fieldName != null) {
         return <dynamic>[fieldName.x, fieldName.y];
       }
@@ -355,15 +349,12 @@ class _WeMapOptions {
     addIfNonNull('logoViewMargins', pointToArray(logoViewMargins));
     addIfNonNull('compassViewPosition', compassViewPosition?.index);
     addIfNonNull('compassViewMargins', pointToArray(compassViewMargins));
-    addIfNonNull(
-        'attributionButtonMargins', pointToArray(attributionButtonMargins));
+    addIfNonNull('attributionButtonMargins', pointToArray(attributionButtonMargins));
     return optionsMap;
   }
 
   Map<String, dynamic> updatesMap(_WeMapOptions newOptions) {
     final Map<String, dynamic> prevOptionsMap = toMap();
-    return newOptions.toMap()
-      ..removeWhere(
-          (String key, dynamic value) => prevOptionsMap[key] == value);
+    return newOptions.toMap()..removeWhere((String key, dynamic value) => prevOptionsMap[key] == value);
   }
 }

@@ -1,28 +1,26 @@
 import 'dart:convert';
 
 import 'package:connectivity/connectivity.dart';
-import 'package:wemapgl/wemapgl.dart';
 import 'package:http/http.dart' as http;
 import 'package:wemapgl/utils/plugin.dart';
+import 'package:wemapgl/wemapgl.dart';
 
 Future<WeMapPlace> getPlace(LatLng latLng) async {
-  Map json;
-  WeMapPlace _place;
+  Map? json;
+  late WeMapPlace _place;
   var connectivityResult = await (Connectivity().checkConnectivity());
   if (connectivityResult != ConnectivityResult.none) {
     try {
-      final response = await http.get(apiReverse(latLng));
+      final response = await http.get(Uri.parse(apiReverse(latLng)));
       final jsondecode = jsonDecode(response.body);
       json = jsondecode;
-      // print(json);
     } catch (e) {
       print('Loi goi info from http');
     }
-    Map features;
-    if (json["features"] == null) {
+    Map? features;
+    if (json?["features"] == null) {
       _place = WeMapPlace(
-        description:
-            '${latLng.latitude.toStringAsFixed(5)}, ${latLng.longitude.toStringAsFixed(5)}',
+        description: '${latLng.latitude.toStringAsFixed(5)}, ${latLng.longitude.toStringAsFixed(5)}',
         cityState: '',
         location: latLng,
         placeId: -1,
@@ -30,15 +28,14 @@ Future<WeMapPlace> getPlace(LatLng latLng) async {
         state: '',
         street: '',
       );
-    } else if (json["features"].length > 0) {
+    } else if (json!["features"].length > 0) {
       features = json["features"][0];
     }
     if (features != null)
       _place = WeMapPlace.fromPelias(features);
     else
       _place = WeMapPlace(
-        description:
-            '${latLng.latitude.toStringAsFixed(5)}, ${latLng.longitude.toStringAsFixed(5)}',
+        description: '${latLng.latitude.toStringAsFixed(5)}, ${latLng.longitude.toStringAsFixed(5)}',
         cityState: '',
         location: latLng,
         placeId: -1,
@@ -50,14 +47,14 @@ Future<WeMapPlace> getPlace(LatLng latLng) async {
   return _place;
 }
 
-Future<Map> getExtraTag(int osmID) async {
+Future<Map> getExtraTag(int? osmID) async {
   Map extraTags = {};
   var connectivityResult = await (Connectivity().checkConnectivity());
   if (connectivityResult != ConnectivityResult.none) {
     try {
-      final responseLookup = await http.get(apiLookup(osmID));
+      final responseLookup = await http.get(Uri.parse(apiLookup(osmID)));
       final jsondecodeLookup = jsonDecode(responseLookup.body);
-      extraTags = jsondecodeLookup["extratags"];
+      extraTags = jsondecodeLookup["extratags"] ?? {};
     } catch (e) {
       print('lookup error');
     }

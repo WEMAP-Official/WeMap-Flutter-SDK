@@ -2,60 +2,50 @@ part of wemapgl;
 
 /// Turn-By-Turn Navigation Provider
 class WeMapNavigation {
-  factory WeMapNavigation({ValueSetter<bool> onRouteProgress}) {
+  factory WeMapNavigation({ValueSetter<bool>? onRouteProgress}) {
     if (_instance == null) {
-      final MethodChannel methodChannel =
-          const MethodChannel('wemapgl');
-      final EventChannel eventChannel =
-          const EventChannel('wemapgl/arrival');
-      _instance = WeMapNavigation.private(
-          methodChannel, eventChannel, onRouteProgress);
+      final MethodChannel methodChannel = const MethodChannel('wemapgl');
+      final EventChannel eventChannel = const EventChannel('wemapgl/arrival');
+      _instance = WeMapNavigation.private(methodChannel, eventChannel, onRouteProgress);
     }
-    return _instance;
+    return _instance!;
   }
 
   @visibleForTesting
-  WeMapNavigation.private(this._methodChannel, this._routeProgressEventchannel,
-      this._routeProgressNotifier);
+  WeMapNavigation.private(this._methodChannel, this._routeProgressEventChannel, this._routeProgressNotifier);
 
-  static WeMapNavigation _instance;
+  static WeMapNavigation? _instance;
 
   final MethodChannel _methodChannel;
-  final EventChannel _routeProgressEventchannel;
-  final ValueSetter<bool> _routeProgressNotifier;
+  final EventChannel _routeProgressEventChannel;
+  final ValueSetter<bool>? _routeProgressNotifier;
 
-  Stream<bool> _onRouteProgress;
-  StreamSubscription<bool> _routeProgressSubscription;
+  Stream<bool>? _onRouteProgress;
+  late StreamSubscription<bool> _routeProgressSubscription;
 
   ///Current Device OS Version
-  Future<String> get platformVersion => _methodChannel
-      .invokeMethod('getPlatformVersion')
-      .then<String>((dynamic result) => result);
+  Future<String> get platformVersion => _methodChannel.invokeMethod('getPlatformVersion').then<String>((dynamic result) => result);
 
   ///Total distance remaining in meters along route.
-  Future<double> get distanceRemaining => _methodChannel
-      .invokeMethod<double>('getDistanceRemaining')
-      .then<double>((dynamic result) => result);
+  Future<double> get distanceRemaining => _methodChannel.invokeMethod<double>('getDistanceRemaining').then<double>((dynamic result) => result);
 
   ///Total seconds remaining on all legs.
-  Future<double> get durationRemaining => _methodChannel
-      .invokeMethod<double>('getDurationRemaining')
-      .then<double>((dynamic result) => result);
+  Future<double> get durationRemaining => _methodChannel.invokeMethod<double>('getDurationRemaining').then<double>((dynamic result) => result);
 
-  Future startNavigation(
-      {Location origin,
-      Location destination,
-      WeMapNavigationMode mode = WeMapNavigationMode.drivingWithTraffic,
-      bool simulateRoute = false, String language}) async {
-    assert(origin != null);
+  Future startNavigation({
+    required Location origin,
+    required Location destination,
+    String? language,
+    WeMapNavigationMode mode = WeMapNavigationMode.drivingWithTraffic,
+    bool simulateRoute = false,
+  }) async {
     assert(origin.name != null);
     assert(origin.latitude != null);
     assert(origin.longitude != null);
-    assert(destination != null);
     assert(destination.name != null);
     assert(destination.latitude != null);
     assert(destination.longitude != null);
-    final Map<String, Object> args = <String, dynamic>{
+    final args = <String, dynamic>{
       "originName": origin.name,
       "originLatitude": origin.latitude,
       "originLongitude": origin.longitude,
@@ -64,7 +54,7 @@ class WeMapNavigation {
       "destinationLongitude": destination.longitude,
       "mode": mode.toString().split('.').last,
       "simulateRoute": simulateRoute,
-      "language" : language
+      "language": language
     };
     await _methodChannel.invokeMethod('startNavigation', args);
     _routeProgressSubscription = _streamRouteProgress.listen(_onProgressData);
@@ -77,18 +67,16 @@ class WeMapNavigation {
   }
 
   void _onProgressData(bool arrived) {
-    if (_routeProgressNotifier != null) _routeProgressNotifier(arrived);
+    if (_routeProgressNotifier != null) _routeProgressNotifier!.call(arrived);
 
     if (arrived) _routeProgressSubscription.cancel();
   }
 
   Stream<bool> get _streamRouteProgress {
     if (_onRouteProgress == null) {
-      _onRouteProgress = _routeProgressEventchannel
-          .receiveBroadcastStream()
-          .map((dynamic event) => _parseArrivalState(event));
+      _onRouteProgress = _routeProgressEventChannel.receiveBroadcastStream().map((dynamic event) => _parseArrivalState(event));
     }
-    return _onRouteProgress;
+    return _onRouteProgress!;
   }
 
   bool _parseArrivalState(bool state) {
@@ -97,12 +85,11 @@ class WeMapNavigation {
 }
 
 class Location {
-  final String name;
-  final double latitude;
-  final double longitude;
+  final String? name;
+  final double? latitude;
+  final double? longitude;
 
-  Location(
-      {@required this.name, @required this.latitude, @required this.longitude});
+  Location({this.name, this.latitude, this.longitude});
 }
 
 enum WeMapNavigationMode { walking, cycling, driving, drivingWithTraffic }
@@ -110,17 +97,16 @@ enum WeMapNavigationMode { walking, cycling, driving, drivingWithTraffic }
 class NavigationView extends StatefulWidget {
   final Location origin;
   final Location destination;
-  final bool simulateRoute;
-  final String language;
+  final bool? simulateRoute;
+  final String? language;
 
-  NavigationView(
-      {@required this.origin, @required this.destination, this.simulateRoute, this.language});
+  NavigationView({required this.origin, required this.destination, this.simulateRoute, this.language});
 
   _NavigationViewState createState() => _NavigationViewState();
 }
 
 class _NavigationViewState extends State<NavigationView> {
-  Map<String, Object> args;
+  late Map<String, dynamic> args;
 
   @override
   initState() {
@@ -132,21 +118,17 @@ class _NavigationViewState extends State<NavigationView> {
       "destinationLatitude": widget.destination.latitude,
       "destinationLongitude": widget.destination.longitude,
       "simulateRoute": widget.simulateRoute,
-      "language" : widget.language
+      "language": widget.language
     };
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return SizedBox(
       height: 350,
       width: 350,
-      child: AndroidView(
-          viewType: "wemap_gl",
-          creationParams: args,
-          creationParamsCodec: StandardMessageCodec()),
+      child: AndroidView(viewType: "wemap_gl", creationParams: args, creationParamsCodec: StandardMessageCodec()),
     );
   }
 }

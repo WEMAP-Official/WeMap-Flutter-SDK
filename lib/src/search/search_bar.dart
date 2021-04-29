@@ -1,15 +1,12 @@
-
-
 part of wemapgl;
 
-// ignore: must_be_immutable
 class WeMapSearchBar extends StatefulWidget {
   WeMapSearchBar({
-    Key key,
-    @required this.location,
+    Key? key,
+    required this.location,
+    required this.onSelected,
+    required this.onClearInput,
     this.geocoder = WeMapGeocoder.Pelias,
-    @required this.onSelected,
-    @required this.onClearInput,
     this.showYourLocation = false,
     this.yourLocationText = wemap_yourLocation,
     this.yourLocationWidget,
@@ -19,59 +16,56 @@ class WeMapSearchBar extends StatefulWidget {
     this.chooseOnMapWidget,
     this.onTapChooseOnMap,
     this.hintText = wemap_searchHere,
-    this.prefix,
-    this.suffix,
+    this.prefix = const <Widget>[],
+    this.suffix = const <Widget>[],
     this.changeBackground = false,
     this.showShadow = false,
     this.isLoading = false,
     this.searchValue,
-  }) {
-    if (prefix == null) prefix = <Widget>[];
-    if (suffix == null) suffix = <Widget>[];
-  }
+  });
 
   ///Type of geocoder: Geocoder.Pelias || Geocoder.Photon || Geocoder.Nominatim
-  WeMapGeocoder geocoder;
+  final WeMapGeocoder geocoder;
 
   ///Set widget and function for prefix
-  List<Widget> prefix;
+  final List<Widget> prefix;
 
   ///Set widget and function for suffix
-  List<Widget> suffix;
+  final List<Widget> suffix;
 
   ///Value = true if your want background = white, else background = transparent
-  bool changeBackground;
+  final bool changeBackground;
 
   ///Value = true if your want have boxshadow
-  bool showShadow;
+  final bool showShadow;
 
   ///Show CircularProgressIndicator in suffix
-  bool isLoading;
+  final bool isLoading;
 
   ///Need or not show my location in list of origin
-  bool showYourLocation;
+  final bool showYourLocation;
 
   ///Ex: "Vị trí của bạn"
-  String yourLocationText;
+  final String yourLocationText;
 
   ///Icon yourlocatin
-  String yourLocationWidget;
+  final Widget? yourLocationWidget;
 
   ///Need or not show my home in list of origin
-  bool showChooseOnMap;
+  final bool showChooseOnMap;
 
   ///Ex: "Chọn trên bản đồ"
-  String chooseOnMapText;
+  final String chooseOnMapText;
 
   ///Icon chooseOnMap
-  String chooseOnMapWidget;
+  final Widget? chooseOnMapWidget;
 
   ///hint text in TextField
-  String hintText;
+  final String hintText;
 
   ///The text will search when init
   ///Please setState searchValue when onSelected if set value for it
-  String searchValue;
+  final String? searchValue;
 
   /// The callback that is called when one Place is selected by the user.
   final void Function(WeMapPlace place) onSelected;
@@ -80,21 +74,23 @@ class WeMapSearchBar extends StatefulWidget {
   final void Function() onClearInput;
 
   /// The callback that is called when the user taps on my location type 2.
-  final void Function() onTapYourLocation;
+  final void Function()? onTapYourLocation;
 
   /// The callback that is called when the user taps on choose on map type 2.
-  final void Function() onTapChooseOnMap;
+  final void Function()? onTapChooseOnMap;
 
   /// The point around which you wish to retrieve place information.
   ///
   /// If this value is provided, `radius` must be provided aswell.
   final LatLng location;
+
   @override
   _WeMapSearchBarState createState() => _WeMapSearchBarState();
 }
 
 class _WeMapSearchBarState extends State<WeMapSearchBar> {
-  String searchValue;
+  String? searchValue;
+
   @override
   Widget build(BuildContext context) {
     if (widget.searchValue != null) {
@@ -103,16 +99,12 @@ class _WeMapSearchBarState extends State<WeMapSearchBar> {
     return Container(
       decoration: BoxDecoration(
         color: widget.changeBackground ? Colors.white : Colors.transparent,
-        boxShadow: widget.showShadow
-            ? [BoxShadow(color: Colors.black38, blurRadius: 5)]
-            : null,
+        boxShadow: widget.showShadow ? [BoxShadow(color: Colors.black38, blurRadius: 5)] : null,
       ),
       child: Container(
         width: MediaQuery.of(context).size.width * 0.95,
         height: 47,
-        decoration: widget.changeBackground
-            ? containerDecorationBar2()
-            : containerDecorationBar1(),
+        decoration: widget.changeBackground ? containerDecorationBar2() : containerDecorationBar1(),
         margin: EdgeInsets.only(
             top: 10 + MediaQuery.of(context).padding.top,
             left: MediaQuery.of(context).size.width * 0.025,
@@ -134,17 +126,10 @@ class _WeMapSearchBarState extends State<WeMapSearchBar> {
               Expanded(
                   child: GestureDetector(
                 child: Padding(
-                    padding: EdgeInsets.only(
-                      left: 21,
-                      right: 16,
-                    ),
+                    padding: EdgeInsets.only(left: 21, right: 16),
                     child: Text(
                       searchValue ?? widget.hintText,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color:
-                            searchValue == null ? Colors.black54 : Colors.black,
-                      ),
+                      style: TextStyle(fontSize: 16, color: searchValue == null ? Colors.black54 : Colors.black),
                       overflow: TextOverflow.ellipsis,
                     )),
                 onTap: () {
@@ -166,11 +151,11 @@ class _WeMapSearchBarState extends State<WeMapSearchBar> {
                           showYourLocation: widget.showYourLocation,
                           yourLocationText: widget.yourLocationText,
                           yourLocationWidget: widget.yourLocationWidget,
-                          onTapYourLocation: () => widget.onTapYourLocation(),
+                          onTapYourLocation: widget.onTapYourLocation,
                           showChooseOnMap: widget.showChooseOnMap,
                           chooseOnMapText: widget.chooseOnMapText,
                           chooseOnMapWidget: widget.chooseOnMapWidget,
-                          onTapChooseOnMap: () => widget.onTapChooseOnMap(),
+                          onTapChooseOnMap: widget.onTapChooseOnMap,
                           hintText: widget.hintText,
                           searchValue: searchValue,
                         ),
@@ -180,21 +165,12 @@ class _WeMapSearchBarState extends State<WeMapSearchBar> {
               )),
               Visibility(
                 visible: widget.isLoading,
-                child: Container(
-                    height: 23,
-                    width: 23,
-                    margin: EdgeInsets.fromLTRB(0, 0, 16, 0),
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                    )),
+                child: Container(height: 23, width: 23, margin: EdgeInsets.fromLTRB(0, 0, 16, 0), child: CircularProgressIndicator(strokeWidth: 2.5)),
               ),
               Visibility(
                 visible: searchValue != null,
                 child: GestureDetector(
-                  child: Icon(
-                    Icons.clear,
-                    color: Colors.black,
-                  ),
+                  child: Icon(Icons.clear, color: Colors.black),
                   onTap: () {
                     setState(() {
                       searchValue = null;

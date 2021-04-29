@@ -18,7 +18,7 @@ typedef void OnCameraIdleCallback();
 
 typedef void OnMapIdleCallback();
 
-typedef void ShowPlaceCard(WeMapPlace place);
+typedef void ShowPlaceCard(WeMapPlace? place);
 
 /// Controller for a single WeMap instance running on the host platform.
 ///
@@ -46,142 +46,126 @@ class WeMapController extends ChangeNotifier {
       this.showPlaceCard,
       this.onUserLocationUpdated,
       this.onCameraIdle,
-      this.reverse})
-      : assert(_id != null) {
+      this.reverse}) {
     _cameraPosition = initialCameraPosition;
 
-    WeMapGlPlatform.getInstance(_id)
-        .onInfoWindowTappedPlatform
-        .add((symbolId) {
-      final Symbol symbol = _symbols[symbolId];
+    WeMapGlPlatform.getInstance(_id)?.onInfoWindowTappedPlatform.add((symbolId) {
+      final Symbol? symbol = _symbols[symbolId];
       if (symbol != null) {
         onInfoWindowTapped(symbol);
       }
     });
 
-    WeMapGlPlatform.getInstance(_id).onSymbolTappedPlatform.add((symbolId) {
-      final Symbol symbol = _symbols[symbolId];
+    WeMapGlPlatform.getInstance(_id)?.onSymbolTappedPlatform.add((symbolId) {
+      final Symbol? symbol = _symbols[symbolId];
       if (symbol != null) {
         onSymbolTapped(symbol);
       }
     });
 
-    WeMapGlPlatform.getInstance(_id).onLineTappedPlatform.add((lineId) {
-      final Line line = _lines[lineId];
+    WeMapGlPlatform.getInstance(_id)?.onLineTappedPlatform.add((lineId) {
+      final Line? line = _lines[lineId];
       if (line != null) {
         onLineTapped(line);
       }
     });
 
-    WeMapGlPlatform.getInstance(_id).onCircleTappedPlatform.add((circleId) {
-      final Circle circle = _circles[circleId];
+    WeMapGlPlatform.getInstance(_id)?.onCircleTappedPlatform.add((circleId) {
+      final Circle? circle = _circles[circleId];
       if (circle != null) {
         onCircleTapped(circle);
       }
     });
 
-    WeMapGlPlatform.getInstance(_id).onFillTappedPlatform.add((fillId) {
-      final Fill fill = _fills[fillId];
+    WeMapGlPlatform.getInstance(_id)?.onFillTappedPlatform.add((fillId) {
+      final Fill? fill = _fills[fillId];
       if (fill != null) {
         onFillTapped(fill);
       }
     });
 
-    WeMapGlPlatform.getInstance(_id).onCameraMoveStartedPlatform.add((_) {
+    WeMapGlPlatform.getInstance(_id)?.onCameraMoveStartedPlatform.add((_) {
       _isCameraMoving = true;
       notifyListeners();
     });
 
-    WeMapGlPlatform.getInstance(_id)
-        .onCameraMovePlatform
-        .add((cameraPosition) {
-      _cameraPosition = cameraPosition;
+    WeMapGlPlatform.getInstance(_id)?.onCameraMovePlatform.add((cameraPosition) {
+      _cameraPosition = cameraPosition!;
       notifyListeners();
     });
 
-    WeMapGlPlatform.getInstance(_id).onCameraIdlePlatform.add((_) {
+    WeMapGlPlatform.getInstance(_id)?.onCameraIdlePlatform.add((_) {
       _isCameraMoving = false;
       if (onCameraIdle != null) {
-        onCameraIdle();
+        onCameraIdle!();
       }
       notifyListeners();
     });
 
-    WeMapGlPlatform.getInstance(_id).onMapStyleLoadedPlatform.add((_) {
+    WeMapGlPlatform.getInstance(_id)?.onMapStyleLoadedPlatform.add((_) {
       if (onStyleLoadedCallback != null) {
-        onStyleLoadedCallback();
+        onStyleLoadedCallback!();
       }
     });
 
-    WeMapGlPlatform.getInstance(_id).onMapClickPlatform.add((dict) async {
+    WeMapGlPlatform.getInstance(_id)?.onMapClickPlatform.add((dict) async {
       if (onMapClick != null) {
         await getPlace(dict['latLng']).then((place) async {
           await getExtraTag(place.placeId).then((extratags) {
-            if (extratags != null) {
-              place.setExtraTags(extratags);
-            } else {
-              place.setExtraTags({});
-            }
-            
-            onMapClick(dict['point'], dict['latLng'], place);
+            place.setExtraTags(extratags);
+
+            onMapClick?.call(dict['point'], dict['latLng'], place);
           });
         });
       }
     });
 
-    WeMapGlPlatform.getInstance(_id).onMapLongClickPlatform.add((dict) async {
+    WeMapGlPlatform.getInstance(_id)?.onMapLongClickPlatform.add((dict) async {
       if (onMapLongClick != null) {
         await getPlace(dict['latLng']).then((place) async {
           await getExtraTag(place.placeId).then((extratags) {
-            if (extratags != null) {
-              place.setExtraTags(extratags);
-            } else {
-              place.setExtraTags({});
-            }
-            onMapLongClick(dict['point'], dict['latLng'], place);
+            place.setExtraTags(extratags);
+            onMapLongClick?.call(dict['point'], dict['latLng'], place);
           });
         });
       }
     });
 
-    WeMapGlPlatform.getInstance(_id)
-        .onCameraTrackingChangedPlatform
-        .add((mode) {
+    WeMapGlPlatform.getInstance(_id)?.onCameraTrackingChangedPlatform.add((mode) {
       if (onCameraTrackingChanged != null) {
-        onCameraTrackingChanged(mode);
+        onCameraTrackingChanged!(mode);
       }
     });
 
-    WeMapGlPlatform.getInstance(_id)
-        .onCameraTrackingDismissedPlatform
-        .add((_) {
+    WeMapGlPlatform.getInstance(_id)?.onCameraTrackingDismissedPlatform.add((_) {
       if (onCameraTrackingDismissed != null) {
-        onCameraTrackingDismissed();
+        onCameraTrackingDismissed!();
       }
     });
 
-    WeMapGlPlatform.getInstance(_id).onMapIdlePlatform.add((_) {
+    WeMapGlPlatform.getInstance(_id)?.onMapIdlePlatform.add((_) {
       if (onMapIdle != null) {
-        onMapIdle();
+        onMapIdle!();
       }
     });
-    WeMapGlPlatform.getInstance(_id).onUserLocationUpdatedPlatform.add((location) { 
-      onUserLocationUpdated?.call(location);
+    WeMapGlPlatform.getInstance(_id)?.onUserLocationUpdatedPlatform.add((location) {
+      if (onUserLocationUpdated != null) {
+        onUserLocationUpdated!(location);
+      }
     });
   }
 
   static WeMapController init(int id, CameraPosition initialCameraPosition,
-      {OnStyleLoadedCallback onStyleLoadedCallback,
-      OnMapClickCallback onMapClick,
-      OnUserLocationUpdated onUserLocationUpdated,
-      OnMapLongClickCallback onMapLongClick,
-      OnCameraTrackingDismissedCallback onCameraTrackingDismissed,
-      OnCameraTrackingChangedCallback onCameraTrackingChanged,
-      OnCameraIdleCallback onCameraIdle,
-      ShowPlaceCard showPlaceCard,
-      OnMapIdleCallback onMapIdle,
-      bool reverse}) {
-    assert(id != null);
+      {OnStyleLoadedCallback? onStyleLoadedCallback,
+      OnMapClickCallback? onMapClick,
+      OnUserLocationUpdated? onUserLocationUpdated,
+      OnMapLongClickCallback? onMapLongClick,
+      OnCameraTrackingDismissedCallback? onCameraTrackingDismissed,
+      OnCameraTrackingChangedCallback? onCameraTrackingChanged,
+      OnCameraIdleCallback? onCameraIdle,
+      ShowPlaceCard? showPlaceCard,
+      OnMapIdleCallback? onMapIdle,
+      bool? reverse}) {
     return WeMapController._(id, initialCameraPosition,
         onStyleLoadedCallback: onStyleLoadedCallback,
         onMapClick: onMapClick,
@@ -196,27 +180,26 @@ class WeMapController extends ChangeNotifier {
   }
 
   static Future<void> initPlatform(int id) async {
-    assert(id != null);
-    await WeMapGlPlatform.getInstance(id).initPlatform(id);
+    await WeMapGlPlatform.getInstance(id)?.initPlatform(id);
   }
 
-  final ShowPlaceCard showPlaceCard;
+  final ShowPlaceCard? showPlaceCard;
 
-  final bool reverse;
-  
-  final OnStyleLoadedCallback onStyleLoadedCallback;
+  final bool? reverse;
 
-  final OnMapClickCallback onMapClick;
-  final OnMapLongClickCallback onMapLongClick;
+  final OnStyleLoadedCallback? onStyleLoadedCallback;
 
-  final OnUserLocationUpdated onUserLocationUpdated;
+  final OnMapClickCallback? onMapClick;
+  final OnMapLongClickCallback? onMapLongClick;
 
-  final OnCameraTrackingDismissedCallback onCameraTrackingDismissed;
-  final OnCameraTrackingChangedCallback onCameraTrackingChanged;
+  final OnUserLocationUpdated? onUserLocationUpdated;
 
-  final OnCameraIdleCallback onCameraIdle;
+  final OnCameraTrackingDismissedCallback? onCameraTrackingDismissed;
+  final OnCameraTrackingChangedCallback? onCameraTrackingChanged;
 
-  final OnMapIdleCallback onMapIdle;
+  final OnCameraIdleCallback? onCameraIdle;
+
+  final OnMapIdleCallback? onMapIdle;
 
   /// Callbacks to receive tap events for symbols placed on this map.
   final ArgumentCallbacks<Symbol> onSymbolTapped = ArgumentCallbacks<Symbol>();
@@ -228,8 +211,7 @@ class WeMapController extends ChangeNotifier {
   final ArgumentCallbacks<Fill> onFillTapped = ArgumentCallbacks<Fill>();
 
   /// Callbacks to receive tap events for info windows on symbols
-  final ArgumentCallbacks<Symbol> onInfoWindowTapped =
-      ArgumentCallbacks<Symbol>();
+  final ArgumentCallbacks<Symbol> onInfoWindowTapped = ArgumentCallbacks<Symbol>();
 
   /// The current set of symbols on this map.
   ///
@@ -264,17 +246,14 @@ class WeMapController extends ChangeNotifier {
 
   /// Returns the most recent camera position reported by the platform side.
   /// Will be null, if [WeMap.trackCameraPosition] is false.
-  CameraPosition get cameraPosition => _cameraPosition;
-  CameraPosition _cameraPosition;
+  CameraPosition? get cameraPosition => _cameraPosition;
+  late CameraPosition? _cameraPosition;
 
   final int _id; //ignore: unused_field
 
   Widget buildView(
-      Map<String, dynamic> creationParams,
-      Function onPlatformViewCreated,
-      Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers) {
-    return WeMapGlPlatform.getInstance(_id)
-        .buildView(creationParams, onPlatformViewCreated, gestureRecognizers);
+      Map<String, dynamic> creationParams, void Function(int) onPlatformViewCreated, Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers) {
+    return WeMapGlPlatform.getInstance(_id)?.buildView(creationParams, onPlatformViewCreated, gestureRecognizers) ?? Container();
   }
 
   /// Updates configuration options of the map user interface.
@@ -284,9 +263,7 @@ class WeMapController extends ChangeNotifier {
   ///
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateMapOptions(Map<String, dynamic> optionsUpdate) async {
-    assert(optionsUpdate != null);
-    _cameraPosition =
-        await WeMapGlPlatform.getInstance(_id).updateMapOptions(optionsUpdate);
+    _cameraPosition = await WeMapGlPlatform.getInstance(_id)?.updateMapOptions(optionsUpdate);
     notifyListeners();
   }
 
@@ -297,32 +274,31 @@ class WeMapController extends ChangeNotifier {
   /// It returns true if the camera was successfully moved and false if the movement was canceled.
   /// Note: this currently always returns immediately with a value of null on iOS
   Future<bool> animateCamera(CameraUpdate cameraUpdate) async {
-    assert(cameraUpdate != null);
-    return WeMapGlPlatform.getInstance(_id).animateCamera(cameraUpdate);
+    return WeMapGlPlatform.getInstance(_id)!.animateCamera(cameraUpdate);
   }
 
   Future<bool> addWMSLayer(String layerID, String wmsURL, int tileSize) async {
-    return WeMapGlPlatform.getInstance(_id).addWMSLayer(layerID, wmsURL, tileSize);
+    return WeMapGlPlatform.getInstance(_id)!.addWMSLayer(layerID, wmsURL, tileSize);
   }
 
   Future<bool> removeWMSLayer(String layerID) async {
-    return WeMapGlPlatform.getInstance(_id).removeWMSLayer(layerID);
+    return WeMapGlPlatform.getInstance(_id)!.removeWMSLayer(layerID);
   }
 
   Future<bool> addTrafficLayer() async {
-    return WeMapGlPlatform.getInstance(_id).addTrafficLayer();
+    return WeMapGlPlatform.getInstance(_id)!.addTrafficLayer();
   }
 
   Future<bool> removeTrafficLayer() async {
-    return WeMapGlPlatform.getInstance(_id).removeTrafficLayer();
+    return WeMapGlPlatform.getInstance(_id)!.removeTrafficLayer();
   }
 
   Future<bool> addSatelliteLayer() async {
-    return WeMapGlPlatform.getInstance(_id).addSatelliteLayer();
+    return WeMapGlPlatform.getInstance(_id)!.addSatelliteLayer();
   }
 
   Future<bool> removeSatelliteLayer() async {
-    return WeMapGlPlatform.getInstance(_id).removeSatelliteLayer();
+    return WeMapGlPlatform.getInstance(_id)!.removeSatelliteLayer();
   }
 
   /// Instantaneously re-position the camera.
@@ -333,17 +309,15 @@ class WeMapController extends ChangeNotifier {
   /// It returns true if the camera was successfully moved and false if the movement was canceled.
   /// Note: this currently always returns immediately with a value of null on iOS
   Future<bool> moveCamera(CameraUpdate cameraUpdate) async {
-    return WeMapGlPlatform.getInstance(_id).moveCamera(cameraUpdate);
+    return WeMapGlPlatform.getInstance(_id)!.moveCamera(cameraUpdate);
   }
 
   /// Updates user location tracking mode.
   ///
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
-  Future<void> updateMyLocationTrackingMode(
-      MyLocationTrackingMode myLocationTrackingMode) async {
-    return WeMapGlPlatform.getInstance(_id)
-        .updateMyLocationTrackingMode(myLocationTrackingMode);
+  Future<void> updateMyLocationTrackingMode(MyLocationTrackingMode myLocationTrackingMode) async {
+    return WeMapGlPlatform.getInstance(_id)!.updateMyLocationTrackingMode(myLocationTrackingMode);
   }
 
   /// Updates the language of the map labels to match the device's language.
@@ -351,8 +325,7 @@ class WeMapController extends ChangeNotifier {
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
   Future<void> matchMapLanguageWithDeviceDefault() async {
-    return WeMapGlPlatform.getInstance(_id)
-        .matchMapLanguageWithDeviceDefault();
+    return WeMapGlPlatform.getInstance(_id)!.matchMapLanguageWithDeviceDefault();
   }
 
   /// Updates the distance from the edges of the map view’s frame to the edges
@@ -366,10 +339,8 @@ class WeMapController extends ChangeNotifier {
   ///
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
-  Future<void> updateContentInsets(EdgeInsets insets,
-      [bool animated = false]) async {
-    return WeMapGlPlatform.getInstance(_id)
-        .updateContentInsets(insets, animated);
+  Future<void> updateContentInsets(EdgeInsets insets, [bool animated = false]) async {
+    return WeMapGlPlatform.getInstance(_id)!.updateContentInsets(insets, animated);
   }
 
   /// Updates the language of the map labels to match the specified language.
@@ -378,7 +349,7 @@ class WeMapController extends ChangeNotifier {
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
   Future<void> setMapLanguage(String language) async {
-    return WeMapGlPlatform.getInstance(_id).setMapLanguage(language);
+    return WeMapGlPlatform.getInstance(_id)!.setMapLanguage(language);
   }
 
   /// Enables or disables the collection of anonymized telemetry data.
@@ -386,7 +357,7 @@ class WeMapController extends ChangeNotifier {
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
   Future<void> setTelemetryEnabled(bool enabled) async {
-    return WeMapGlPlatform.getInstance(_id).setTelemetryEnabled(enabled);
+    return WeMapGlPlatform.getInstance(_id)!.setTelemetryEnabled(enabled);
   }
 
   /// Retrieves whether collection of anonymized telemetry data is enabled.
@@ -394,7 +365,7 @@ class WeMapController extends ChangeNotifier {
   /// The returned [Future] completes after the query has been made on the
   /// platform side.
   Future<bool> getTelemetryEnabled() async {
-    return WeMapGlPlatform.getInstance(_id).getTelemetryEnabled();
+    return WeMapGlPlatform.getInstance(_id)!.getTelemetryEnabled();
   }
 
   /// Adds a symbol to the map, configured using the specified custom [options].
@@ -404,19 +375,16 @@ class WeMapController extends ChangeNotifier {
   ///
   /// The returned [Future] completes with the added symbol once listeners have
   /// been notified.
-  Future<Symbol> addSymbol(SymbolOptions options, [Map data]) async {
-    List<Symbol> result = await addSymbols([options], [data]);
+  Future<Symbol> addSymbol(SymbolOptions options, [Map? data]) async {
+    List<Symbol> result = await addSymbols([options], data != null ? [data] : []);
 
     return result.first;
   }
 
-  Future<List<Symbol>> addSymbols(List<SymbolOptions> options,
-      [List<Map> data]) async {
-    final List<SymbolOptions> effectiveOptions =
-        options.map((o) => SymbolOptions.defaultOptions.copyWith(o)).toList();
+  Future<List<Symbol>> addSymbols(List<SymbolOptions> options, [List<Map>? data]) async {
+    final List<SymbolOptions> effectiveOptions = options.map((o) => SymbolOptions.defaultOptions.copyWith(o)).toList();
 
-    final symbols = await WeMapGlPlatform.getInstance(_id)
-        .addSymbols(effectiveOptions, data);
+    final symbols = await WeMapGlPlatform.getInstance(_id)!.addSymbols(effectiveOptions, data);
     symbols.forEach((s) => _symbols[s.id] = s);
     notifyListeners();
     return symbols;
@@ -430,10 +398,8 @@ class WeMapController extends ChangeNotifier {
   ///
   /// The returned [Future] completes once listeners have been notified.
   Future<void> updateSymbol(Symbol symbol, SymbolOptions changes) async {
-    assert(symbol != null);
     assert(_symbols[symbol.id] == symbol);
-    assert(changes != null);
-    await WeMapGlPlatform.getInstance(_id).updateSymbol(symbol, changes);
+    await WeMapGlPlatform.getInstance(_id)!.updateSymbol(symbol, changes);
     symbol.options = symbol.options.copyWith(changes);
     notifyListeners();
   }
@@ -442,10 +408,8 @@ class WeMapController extends ChangeNotifier {
   /// This may be different from the value of `symbol.options.geometry` if the symbol is draggable.
   /// In that case this method provides the symbol's actual position, and `symbol.options.geometry` the last programmatically set position.
   Future<LatLng> getSymbolLatLng(Symbol symbol) async {
-    assert(symbol != null);
     assert(_symbols[symbol.id] == symbol);
-    final symbolLatLng =
-        await WeMapGlPlatform.getInstance(_id).getSymbolLatLng(symbol);
+    final symbolLatLng = await WeMapGlPlatform.getInstance(_id)!.getSymbolLatLng(symbol);
     notifyListeners();
     return symbolLatLng;
   }
@@ -458,7 +422,6 @@ class WeMapController extends ChangeNotifier {
   ///
   /// The returned [Future] completes once listeners have been notified.
   Future<void> removeSymbol(Symbol symbol) async {
-    assert(symbol != null);
     assert(_symbols[symbol.id] == symbol);
     await _removeSymbols([symbol.id]);
     notifyListeners();
@@ -481,7 +444,6 @@ class WeMapController extends ChangeNotifier {
   ///
   /// The returned [Future] completes once listeners have been notified.
   Future<void> clearSymbols() async {
-    assert(_symbols != null);
     final List<String> symbolIds = List<String>.from(_symbols.keys);
     _removeSymbols(symbolIds);
     notifyListeners();
@@ -493,7 +455,7 @@ class WeMapController extends ChangeNotifier {
   /// The returned [Future] completes once the symbol has been removed from
   /// [_symbols].
   Future<void> _removeSymbols(Iterable<String> ids) async {
-    await WeMapGlPlatform.getInstance(_id).removeSymbols(ids);
+    await WeMapGlPlatform.getInstance(_id)?.removeSymbols(ids);
     _symbols.removeWhere((k, s) => ids.contains(k));
   }
 
@@ -504,11 +466,9 @@ class WeMapController extends ChangeNotifier {
   ///
   /// The returned [Future] completes with the added line once listeners have
   /// been notified.
-  Future<Line> addLine(LineOptions options, [Map data]) async {
-    final LineOptions effectiveOptions =
-        LineOptions.defaultOptions.copyWith(options);
-    final line =
-        await WeMapGlPlatform.getInstance(_id).addLine(effectiveOptions, data);
+  Future<Line> addLine(LineOptions options, [Map? data]) async {
+    final LineOptions effectiveOptions = LineOptions.defaultOptions.copyWith(options);
+    final line = await WeMapGlPlatform.getInstance(_id)!.addLine(effectiveOptions, data);
     _lines[line.id] = line;
     notifyListeners();
     return line;
@@ -522,10 +482,8 @@ class WeMapController extends ChangeNotifier {
   ///
   /// The returned [Future] completes once listeners have been notified.
   Future<void> updateLine(Line line, LineOptions changes) async {
-    assert(line != null);
     assert(_lines[line.id] == line);
-    assert(changes != null);
-    await WeMapGlPlatform.getInstance(_id).updateLine(line, changes);
+    await WeMapGlPlatform.getInstance(_id)?.updateLine(line, changes);
     line.options = line.options.copyWith(changes);
     notifyListeners();
   }
@@ -534,10 +492,8 @@ class WeMapController extends ChangeNotifier {
   /// This may be different from the value of `line.options.geometry` if the line is draggable.
   /// In that case this method provides the line's actual position, and `line.options.geometry` the last programmatically set position.
   Future<List<LatLng>> getLineLatLngs(Line line) async {
-    assert(line != null);
     assert(_lines[line.id] == line);
-    final lineLatLngs =
-        await WeMapGlPlatform.getInstance(_id).getLineLatLngs(line);
+    final lineLatLngs = await WeMapGlPlatform.getInstance(_id)!.getLineLatLngs(line);
     notifyListeners();
     return lineLatLngs;
   }
@@ -550,7 +506,6 @@ class WeMapController extends ChangeNotifier {
   ///
   /// The returned [Future] completes once listeners have been notified.
   Future<void> removeLine(Line line) async {
-    assert(line != null);
     assert(_lines[line.id] == line);
     await _removeLine(line.id);
     notifyListeners();
@@ -563,7 +518,6 @@ class WeMapController extends ChangeNotifier {
   ///
   /// The returned [Future] completes once listeners have been notified.
   Future<void> clearLines() async {
-    assert(_lines != null);
     final List<String> lineIds = List<String>.from(_lines.keys);
     for (String id in lineIds) {
       await _removeLine(id);
@@ -577,7 +531,7 @@ class WeMapController extends ChangeNotifier {
   /// The returned [Future] completes once the line has been removed from
   /// [_lines].
   Future<void> _removeLine(String id) async {
-    await WeMapGlPlatform.getInstance(_id).removeLine(id);
+    await WeMapGlPlatform.getInstance(_id)?.removeLine(id);
     _lines.remove(id);
   }
 
@@ -588,11 +542,9 @@ class WeMapController extends ChangeNotifier {
   ///
   /// The returned [Future] completes with the added circle once listeners have
   /// been notified.
-  Future<Circle> addCircle(CircleOptions options, [Map data]) async {
-    final CircleOptions effectiveOptions =
-        CircleOptions.defaultOptions.copyWith(options);
-    final circle = await WeMapGlPlatform.getInstance(_id)
-        .addCircle(effectiveOptions, data);
+  Future<Circle> addCircle(CircleOptions options, [Map? data]) async {
+    final CircleOptions effectiveOptions = CircleOptions.defaultOptions.copyWith(options);
+    final circle = await WeMapGlPlatform.getInstance(_id)!.addCircle(effectiveOptions, data);
     _circles[circle.id] = circle;
     notifyListeners();
     return circle;
@@ -606,10 +558,8 @@ class WeMapController extends ChangeNotifier {
   ///
   /// The returned [Future] completes once listeners have been notified.
   Future<void> updateCircle(Circle circle, CircleOptions changes) async {
-    assert(circle != null);
     assert(_circles[circle.id] == circle);
-    assert(changes != null);
-    await WeMapGlPlatform.getInstance(_id).updateCircle(circle, changes);
+    await WeMapGlPlatform.getInstance(_id)?.updateCircle(circle, changes);
     circle.options = circle.options.copyWith(changes);
     notifyListeners();
   }
@@ -618,10 +568,8 @@ class WeMapController extends ChangeNotifier {
   /// This may be different from the value of `circle.options.geometry` if the circle is draggable.
   /// In that case this method provides the circle's actual position, and `circle.options.geometry` the last programmatically set position.
   Future<LatLng> getCircleLatLng(Circle circle) async {
-    assert(circle != null);
     assert(_circles[circle.id] == circle);
-    final circleLatLng =
-        await WeMapGlPlatform.getInstance(_id).getCircleLatLng(circle);
+    final circleLatLng = await WeMapGlPlatform.getInstance(_id)!.getCircleLatLng(circle);
     notifyListeners();
     return circleLatLng;
   }
@@ -634,7 +582,6 @@ class WeMapController extends ChangeNotifier {
   ///
   /// The returned [Future] completes once listeners have been notified.
   Future<void> removeCircle(Circle circle) async {
-    assert(circle != null);
     assert(_circles[circle.id] == circle);
     await _removeCircle(circle.id);
     notifyListeners();
@@ -647,7 +594,6 @@ class WeMapController extends ChangeNotifier {
   ///
   /// The returned [Future] completes once listeners have been notified.
   Future<void> clearCircles() async {
-    assert(_circles != null);
     final List<String> circleIds = List<String>.from(_circles.keys);
     for (String id in circleIds) {
       await _removeCircle(id);
@@ -661,7 +607,7 @@ class WeMapController extends ChangeNotifier {
   /// The returned [Future] completes once the circle has been removed from
   /// [_circles].
   Future<void> _removeCircle(String id) async {
-    await WeMapGlPlatform.getInstance(_id).removeCircle(id);
+    await WeMapGlPlatform.getInstance(_id)?.removeCircle(id);
 
     _circles.remove(id);
   }
@@ -673,16 +619,15 @@ class WeMapController extends ChangeNotifier {
   ///
   /// The returned [Future] completes with the added fill once listeners have
   /// been notified.
-  Future<Fill> addFill(FillOptions options, [Map data]) async {
-    final FillOptions effectiveOptions =
-        FillOptions.defaultOptions.copyWith(options);
-    final fill = await WeMapGlPlatform.getInstance(_id).addFill(effectiveOptions);
+  Future<Fill> addFill(FillOptions options, [Map? data]) async {
+    final FillOptions effectiveOptions = FillOptions.defaultOptions.copyWith(options);
+    final fill = await WeMapGlPlatform.getInstance(_id)!.addFill(effectiveOptions);
     _fills[fill.id] = fill;
     notifyListeners();
     return fill;
   }
 
-  Future<List<dynamic>> addGeoJSON(GeoJSONOptions options, [Map data]) async {
+  Future<List<dynamic>> addGeoJSON(GeoJSONOptions options, [Map? data]) async {
     List<dynamic> _id = await options.addToMap(this);
     notifyListeners();
     return _id;
@@ -696,10 +641,8 @@ class WeMapController extends ChangeNotifier {
   ///
   /// The returned [Future] completes once listeners have been notified.
   Future<void> updateFill(Fill fill, FillOptions changes) async {
-    assert(fill != null);
     assert(_fills[fill.id] == fill);
-    assert(changes != null);
-    await WeMapGlPlatform.getInstance(_id).updateFill(fill, changes);
+    await WeMapGlPlatform.getInstance(_id)?.updateFill(fill, changes);
     fill.options = fill.options.copyWith(changes);
     notifyListeners();
   }
@@ -712,7 +655,6 @@ class WeMapController extends ChangeNotifier {
   ///
   /// The returned [Future] completes once listeners have been notified.
   Future<void> removeFill(Fill fill) async {
-    assert(fill != null);
     assert(_fills[fill.id] == fill);
     await _removeFill(fill.id);
     notifyListeners();
@@ -724,37 +666,33 @@ class WeMapController extends ChangeNotifier {
   /// The returned [Future] completes once the fill has been removed from
   /// [_fills].
   Future<void> _removeFill(String id) async {
-    await WeMapGlPlatform.getInstance(_id).removeFill(id);
+    await WeMapGlPlatform.getInstance(_id)?.removeFill(id);
 
     _fills.remove(id);
   }
 
-  Future<List> queryRenderedFeatures(
-      Point<double> point, List<String> layerIds, List<Object> filter) async {
-    return WeMapGlPlatform.getInstance(_id)
-        .queryRenderedFeatures(point, layerIds, filter);
+  Future<List?> queryRenderedFeatures(Point<double> point, List<String> layerIds, List<Object> filter) async {
+    return WeMapGlPlatform.getInstance(_id)?.queryRenderedFeatures(point, layerIds, filter);
   }
 
-  Future<List> queryRenderedFeaturesInRect(
-      Rect rect, List<String> layerIds, String filter) async {
-    return WeMapGlPlatform.getInstance(_id)
-        .queryRenderedFeaturesInRect(rect, layerIds, filter);
+  Future<List?> queryRenderedFeaturesInRect(Rect rect, List<String> layerIds, String filter) async {
+    return WeMapGlPlatform.getInstance(_id)?.queryRenderedFeaturesInRect(rect, layerIds, filter);
   }
 
   Future invalidateAmbientCache() async {
-    return WeMapGlPlatform.getInstance(_id).invalidateAmbientCache();
+    return WeMapGlPlatform.getInstance(_id)?.invalidateAmbientCache();
   }
 
   /// Get last my location
   ///
   /// Return last latlng, nullable
-  Future<LatLng> requestMyLocationLatLng() async {
-    return WeMapGlPlatform.getInstance(_id).requestMyLocationLatLng();
+  Future<LatLng?> requestMyLocationLatLng() async {
+    return WeMapGlPlatform.getInstance(_id)!.requestMyLocationLatLng();
   }
 
   /// This method returns the boundaries of the region currently displayed in the map.
   Future<LatLngBounds> getVisibleRegion() async {
-    return WeMapGlPlatform.getInstance(_id).getVisibleRegion();
+    return WeMapGlPlatform.getInstance(_id)!.getVisibleRegion();
   }
 
   /// Adds an image to the style currently displayed in the map, so that it can later be referred to by the provided name.
@@ -793,50 +731,47 @@ class WeMapController extends ChangeNotifier {
   /// }
   /// ```
   Future<void> addImage(String name, Uint8List bytes, [bool sdf = false]) {
-    return WeMapGlPlatform.getInstance(_id).addImage(name, bytes, sdf);
+    return WeMapGlPlatform.getInstance(_id)!.addImage(name, bytes, sdf);
   }
 
   /// For more information on what this does, see https://docs.mapbox.com/help/troubleshooting/optimize-map-label-placement/#label-collision
   Future<void> setSymbolIconAllowOverlap(bool enable) async {
-    await WeMapGlPlatform.getInstance(_id).setSymbolIconAllowOverlap(enable);
+    await WeMapGlPlatform.getInstance(_id)!.setSymbolIconAllowOverlap(enable);
   }
 
   /// For more information on what this does, see https://docs.mapbox.com/help/troubleshooting/optimize-map-label-placement/#label-collision
   Future<void> setSymbolIconIgnorePlacement(bool enable) async {
-    await WeMapGlPlatform.getInstance(_id)
-        .setSymbolIconIgnorePlacement(enable);
+    await WeMapGlPlatform.getInstance(_id)!.setSymbolIconIgnorePlacement(enable);
   }
 
   /// For more information on what this does, see https://docs.mapbox.com/help/troubleshooting/optimize-map-label-placement/#label-collision
   Future<void> setSymbolTextAllowOverlap(bool enable) async {
-    await WeMapGlPlatform.getInstance(_id).setSymbolTextAllowOverlap(enable);
+    await WeMapGlPlatform.getInstance(_id)!.setSymbolTextAllowOverlap(enable);
   }
 
   /// For more information on what this does, see https://docs.mapbox.com/help/troubleshooting/optimize-map-label-placement/#label-collision
   Future<void> setSymbolTextIgnorePlacement(bool enable) async {
-    await WeMapGlPlatform.getInstance(_id)
-        .setSymbolTextIgnorePlacement(enable);
+    await WeMapGlPlatform.getInstance(_id)!.setSymbolTextIgnorePlacement(enable);
   }
 
   /// Adds an image source to the style currently displayed in the map, so that it can later be referred to by the provided name.
   Future<void> addImageSource(String name, Uint8List bytes, LatLngQuad coordinates) {
-    return WeMapGlPlatform.getInstance(_id)
-        .addImageSource(name, bytes, coordinates);
+    return WeMapGlPlatform.getInstance(_id)!.addImageSource(name, bytes, coordinates);
   }
 
   /// Removes previously added image source by name
   Future<void> removeImageSource(String name) {
-    return WeMapGlPlatform.getInstance(_id).removeImageSource(name);
+    return WeMapGlPlatform.getInstance(_id)!.removeImageSource(name);
   }
 
   /// Adds layer with name
   Future<void> addLayer(String name, String sourceId) {
-    return WeMapGlPlatform.getInstance(_id).addLayer(name, sourceId);
+    return WeMapGlPlatform.getInstance(_id)!.addLayer(name, sourceId);
   }
 
   /// Removes layer by name
   Future<void> removeLayer(String name) {
-    return WeMapGlPlatform.getInstance(_id).removeLayer(name);
+    return WeMapGlPlatform.getInstance(_id)!.removeLayer(name);
   }
 
   /// Returns the point on the screen that corresponds to a geographical coordinate ([latLng]). The screen location is in screen pixels (not display pixels) relative to the top left of the map (not of the whole screen)
@@ -846,81 +781,79 @@ class WeMapController extends ChangeNotifier {
   ///
   /// Returns null if [latLng] is not currently visible on the map.
   Future<Point> toScreenLocation(LatLng latLng) async {
-    return WeMapGlPlatform.getInstance(_id).toScreenLocation(latLng);
+    return WeMapGlPlatform.getInstance(_id)!.toScreenLocation(latLng);
   }
 
   /// Returns the geographic location (as [LatLng]) that corresponds to a point on the screen. The screen location is specified in screen pixels (not display pixels) relative to the top left of the map (not the top left of the whole screen).
   Future<LatLng> toLatLng(Point screenLocation) async {
-    return WeMapGlPlatform.getInstance(_id).toLatLng(screenLocation);
+    return WeMapGlPlatform.getInstance(_id)!.toLatLng(screenLocation);
   }
 
   /// Returns the distance spanned by one pixel at the specified [latitude] and current zoom level.
   /// The distance between pixels decreases as the latitude approaches the poles. This relationship parallels the relationship between longitudinal coordinates at different latitudes.
-  Future<double> getMetersPerPixelAtLatitude(double latitude) async{
-    return WeMapGlPlatform.getInstance(_id).getMetersPerPixelAtLatitude(latitude);
+  Future<double> getMetersPerPixelAtLatitude(double latitude) async {
+    return WeMapGlPlatform.getInstance(_id)!.getMetersPerPixelAtLatitude(latitude);
   }
 
-  Future<WeMapPlace> _getPlace(LatLng latLng) async {
-    Map json;
-    WeMapPlace _place;
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult != ConnectivityResult.none) {
-      try {
-        final response = await http.get(apiReverse(latLng));
-        final jsondecode = jsonDecode(response.body);
-        json = jsondecode;
-      } catch (e) {
-        print('Loi goi info from http');
-      }
-      Map features;
-      if (json["features"].length > 0) {
-        features = json["features"][0];
-      }
-      if (features != null) {
-        _place = WeMapPlace.fromPelias(features);
-        if (_place.distance > 0.02) {
-          Map jsonLocality;
-          try {
-            final responseLocality = await http.get(apiLocality(latLng));
-            final jsondecodeLocality = jsonDecode(responseLocality.body);
-            jsonLocality = jsondecodeLocality;
-          } catch (e) {
-            print('Loi goi info from http');
-          }
-          Map featuresLocality;
-          if (jsonLocality["features"].length > 0) {
-            featuresLocality = jsonLocality["features"][0];
-          }
-          if (featuresLocality != null)
-            _place = WeMapPlace.fromPelias(featuresLocality);
-        }
-      } else
-        _place = WeMapPlace(
-          description:
-              '${latLng.latitude.toStringAsFixed(5)}, ${latLng.longitude.toStringAsFixed(5)}',
-          cityState: '',
-          location: latLng,
-          placeId: -1,
-          placeName: 'Địa điểm chưa biết',
-          state: '',
-          street: '',
-        );
-    }
-    return _place;
-  }
-
-  Future<Map> _getExtraTag(int osmID) async {
-    Map extraTags = {};
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult != ConnectivityResult.none) {
-      try {
-        final responseLookup = await http.get(apiLookup(osmID));
-        final jsondecodeLookup = jsonDecode(responseLookup.body);
-        extraTags = jsondecodeLookup["extratags"];
-      } catch (e) {
-        print('lookup error');
-      }
-    }
-    return extraTags;
-  }
+  // Future<WeMapPlace> _getPlace(LatLng latLng) async {
+  //   late Map json;
+  //   late WeMapPlace _place;
+  //   var connectivityResult = await Connectivity().checkConnectivity();
+  //   if (connectivityResult != ConnectivityResult.none) {
+  //     try {
+  //       final response = await http.get(Uri.parse(apiReverse(latLng)));
+  //       final jsondecode = jsonDecode(response.body);
+  //       json = jsondecode;
+  //     } catch (e) {
+  //       print('Loi goi info from http');
+  //     }
+  //     Map? features;
+  //     if (json["features"].length > 0) {
+  //       features = json["features"][0];
+  //     }
+  //     if (features != null) {
+  //       _place = WeMapPlace.fromPelias(features);
+  //       if (_place.distance! > 0.02) {
+  //         late Map jsonLocality;
+  //         try {
+  //           final responseLocality = await http.get(Uri.parse(apiLocality(latLng)));
+  //           final jsondecodeLocality = jsonDecode(responseLocality.body);
+  //           jsonLocality = jsondecodeLocality;
+  //         } catch (e) {
+  //           print('Loi goi info from http');
+  //         }
+  //         Map? featuresLocality;
+  //         if (jsonLocality["features"].length > 0) {
+  //           featuresLocality = jsonLocality["features"][0];
+  //         }
+  //         if (featuresLocality != null) _place = WeMapPlace.fromPelias(featuresLocality);
+  //       }
+  //     } else
+  //       _place = WeMapPlace(
+  //         description: '${latLng.latitude.toStringAsFixed(5)}, ${latLng.longitude.toStringAsFixed(5)}',
+  //         cityState: '',
+  //         location: latLng,
+  //         placeId: -1,
+  //         placeName: 'Địa điểm chưa biết',
+  //         state: '',
+  //         street: '',
+  //       );
+  //   }
+  //   return _place;
+  // }
+  //
+  // Future<Map> _getExtraTag(int osmID) async {
+  //   Map extraTags = {};
+  //   var connectivityResult = await (Connectivity().checkConnectivity());
+  //   if (connectivityResult != ConnectivityResult.none) {
+  //     try {
+  //       final responseLookup = await http.get(Uri.parse(apiLookup(osmID)));
+  //       final jsondecodeLookup = jsonDecode(responseLookup.body);
+  //       extraTags = jsondecodeLookup["extratags"];
+  //     } catch (e) {
+  //       print('lookup error');
+  //     }
+  //   }
+  //   return extraTags;
+  // }
 }

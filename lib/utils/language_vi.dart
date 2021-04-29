@@ -55,15 +55,13 @@ const String wemap_beforeYesterday = 'HÔM KIA';
 const String wemap_previousSearches = 'CÁC TÌM KIẾM TRƯỚC';
 const String wemap_moreHistory = 'Xem thêm lịch sử tìm kiếm';
 const String wemap_searchNow = "Tìm kiếm ngay";
-const String wemap_searchRecommend =
-    "Hãy tìm kiếm một địa danh, địa điểm mà bạn quan tâm";
+const String wemap_searchRecommend = "Hãy tìm kiếm một địa danh, địa điểm mà bạn quan tâm";
 const String wemap_deleteAll = 'XOÁ TẤT CẢ';
 const String wemap_notConnection = "Không có kết nối mạng";
 
 ///Explore, Weather, AQI SDK
 //Explore
-const String wemap_exploreAQIAddress =
-    'Thời tiết và mức độ ô nhiễm không khí quanh khu vực';
+const String wemap_exploreAQIAddress = 'Thời tiết và mức độ ô nhiễm không khí quanh khu vực';
 const String wemap_exploreAround = "Khám phá xung quanh";
 //AQI
 const String wemap_aqiGood = 'Tốt';
@@ -79,8 +77,8 @@ const String wemap_pm25ValueLabel = 'Chỉ số bụi siêu mịn PM2.5: ';
 const String wemap_pm10ValueLabel = 'Chỉ số bụi mịn PM10: ';
 const String wemap_coValueLabel = 'Chỉ số khí CO: ';
 const String wemap_aqiValueLabel = 'Chỉ số AQI: ';
-String airnet([String kit]) =>
-    kit == null ? 'https://airnet.vn/' : 'https://airnet.vn/kit/$kit';
+
+String airnet([String? kit]) => kit == null ? 'https://airnet.vn/' : 'https://airnet.vn/kit/$kit';
 //Weather
 const String wemap_temperatureText = 'Nhiệt độ';
 const String wemap_humidityText = 'Độ ẩm';
@@ -90,10 +88,10 @@ const String wemap_sunset = 'MT lặn: ';
 const String wemap_pressure = 'Áp suất: ';
 const String wemap_windSpeed = 'Sức gió: ';
 const String wemap_noData = 'Không có dữ liệu cập nhật';
-String titleChart(String type) =>
-    'Biểu đồ dữ liệu $type theo giờ trong 24 giờ gần nhất';
-String weather([String id]) =>
-    id == null ? 'openweathermap.org' : 'https://openweathermap.org/city/$id';
+
+String titleChart(String type) => 'Biểu đồ dữ liệu $type theo giờ trong 24 giờ gần nhất';
+
+String weather([String? id]) => id == null ? 'openweathermap.org' : 'https://openweathermap.org/city/$id';
 const Map<int, String> wemap_weatherDescription = {
   200: "Giông bão kèm mưa nhỏ",
   201: "Giông và có mưa",
@@ -191,5 +189,3 @@ String originHintText = "Chọn điểm đi";
 String destinationHint = "Điểm đến";
 String destinationHintText = "Chọn điểm đến";
 String chooseText = "Chọn";
-
-

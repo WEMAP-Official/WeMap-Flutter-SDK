@@ -8,10 +8,12 @@ class Fill {
   ///
   /// The identifier is an arbitrary unique string.
   final String _id;
+
   String get id => _id;
 
-  final Map _data;
-  Map get data => _data;
+  final Map? _data;
+
+  Map? get data => _data;
 
   /// The fill configuration options most recently applied programmatically
   /// via the map controller.
@@ -30,21 +32,14 @@ class FillOptions {
   ///
   /// By default, every non-specified field is null, meaning no desire to change
   /// fill defaults or current configuration.
-  const FillOptions({
-    this.fillOpacity,
-    this.fillColor,
-    this.fillOutlineColor,
-    this.fillPattern,
-    this.geometry,
-    this.draggable
-  });
+  const FillOptions({this.fillOpacity, this.fillColor, this.fillOutlineColor, this.fillPattern, this.geometry, this.draggable});
 
-  final double fillOpacity;
-  final String fillColor;
-  final String fillOutlineColor;
-  final String fillPattern;
-  final List<List<LatLng>> geometry;
-  final bool draggable;
+  final double? fillOpacity;
+  final String? fillColor;
+  final String? fillOutlineColor;
+  final String? fillPattern;
+  final List<List<LatLng>>? geometry;
+  final bool? draggable;
 
   static const FillOptions defaultOptions = FillOptions();
 
@@ -75,8 +70,7 @@ class FillOptions {
     addIfPresent('fillColor', fillColor);
     addIfPresent('fillOutlineColor', fillOutlineColor);
     addIfPresent('fillPattern', fillPattern);
-    addIfPresent('geometry',
-        geometry?.map((List<LatLng> latLngList) => latLngList.map((LatLng latLng) => latLng.toJson())?.toList())?.toList());
+    addIfPresent('geometry', geometry?.map((List<LatLng> latLngList) => latLngList.map((LatLng latLng) => latLng.toJson()).toList()).toList());
     addIfPresent('draggable', draggable);
     return json;
   }

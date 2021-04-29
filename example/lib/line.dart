@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -7,7 +5,7 @@ import 'package:wemapgl/wemapgl.dart';
 
 import 'ePage.dart';
 
-class LinePage extends ePage {
+class LinePage extends EPage{
   LinePage() : super(const Icon(Icons.done), 'Line');
 
   @override
@@ -24,13 +22,11 @@ class LineBody extends StatefulWidget {
 }
 
 class LineBodyState extends State<LineBody> {
-  LineBodyState();
-
   static final LatLng center = const LatLng(21.86711, 105.1947171);
 
-  WeMapController controller;
+  late WeMapController controller;
   int _lineCount = 0;
-  Line _selectedLine;
+  Line? _selectedLine;
 
   void _onMapCreated(WeMapController controller) {
     this.controller = controller;
@@ -39,30 +35,22 @@ class LineBodyState extends State<LineBody> {
 
   @override
   void dispose() {
-    controller?.onLineTapped?.remove(_onLineTapped);
+    controller.onLineTapped.remove(_onLineTapped);
     super.dispose();
   }
 
   void _onLineTapped(Line line) {
     if (_selectedLine != null) {
-      _updateSelectedLine(
-        const LineOptions(
-          lineWidth: 28.0,
-        ),
-      );
+      _updateSelectedLine(const LineOptions(lineWidth: 28.0));
     }
     setState(() {
       _selectedLine = line;
     });
-    _updateSelectedLine(
-      LineOptions(
-          // linecolor: ,
-          ),
-    );
+    _updateSelectedLine(LineOptions());
   }
 
   void _updateSelectedLine(LineOptions changes) {
-    controller.updateLine(_selectedLine, changes);
+    controller.updateLine(_selectedLine!, changes);
   }
 
   void _add() {
@@ -85,44 +73,29 @@ class LineBodyState extends State<LineBody> {
   }
 
   void _remove() {
-    controller.removeLine(_selectedLine);
+    controller.removeLine(_selectedLine!);
     setState(() {
       _selectedLine = null;
       _lineCount -= 1;
     });
   }
 
-
   Future<void> _changeAlpha() async {
-    double current = _selectedLine.options.lineOpacity;
-    if (current == null) {
-      // default value
-      current = 1.0;
-    }
+    double? current = _selectedLine?.options.lineOpacity ?? 1.0;
 
-    _updateSelectedLine(
-      LineOptions(lineOpacity: current < 0.1 ? 1.0 : current * 0.75),
-    );
+    _updateSelectedLine(LineOptions(lineOpacity: current < 0.1 ? 1.0 : current * 0.75));
   }
 
   Future<void> _toggleVisible() async {
-    double current = _selectedLine.options.lineOpacity;
-    if (current == null) {
-      // default value
-      current = 1.0;
-    }
-    _updateSelectedLine(
-      LineOptions(lineOpacity: current == 0.0 ? 1.0 : 0.0),
-    );
+    double current = _selectedLine?.options.lineOpacity ?? 1.0;
+
+    _updateSelectedLine(LineOptions(lineOpacity: current == 0.0 ? 1.0 : 0.0));
   }
 
   void onStyleLoadedCallback() {
     controller.addLine(
       LineOptions(
-        geometry: [
-          LatLng(37.4220, -122.0841),
-          LatLng(37.4240, -122.0941)
-        ],
+        geometry: [LatLng(37.4220, -122.0841), LatLng(37.4240, -122.0941)],
         lineColor: "#ff0000",
         lineWidth: 14.0,
         lineOpacity: 0.5,
@@ -159,11 +132,11 @@ class LineBodyState extends State<LineBody> {
                   children: <Widget>[
                     Column(
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: const Text('add'),
                           onPressed: (_lineCount == 12) ? null : _add,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('remove'),
                           onPressed: (_selectedLine == null) ? null : _remove,
                         ),
@@ -171,15 +144,13 @@ class LineBodyState extends State<LineBody> {
                     ),
                     Column(
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: const Text('change alpha'),
-                          onPressed:
-                              (_selectedLine == null) ? null : _changeAlpha,
+                          onPressed: (_selectedLine == null) ? null : _changeAlpha,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('toggle visible'),
-                          onPressed:
-                              (_selectedLine == null) ? null : _toggleVisible,
+                          onPressed: (_selectedLine == null) ? null : _toggleVisible,
                         ),
                       ],
                     ),

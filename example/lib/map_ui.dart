@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:wemapgl/wemapgl.dart';
 
@@ -10,8 +8,9 @@ final LatLngBounds hanoiBounds = LatLngBounds(
   northeast: const LatLng(21.094369, 105.883025),
 );
 
-class MapUiPage extends ePage {
+class MapUiPage extends EPage{
   MapUiPage() : super(const Icon(Icons.map), 'User interface');
+
   @override
   Widget build(BuildContext context) {
     return const MapUiBody();
@@ -26,14 +25,12 @@ class MapUiBody extends StatefulWidget {
 }
 
 class MapUiBodyState extends State<MapUiBody> {
-  MapUiBodyState();
-
   static final CameraPosition _kInitialPosition = const CameraPosition(
     target: LatLng(21.038282, 105.782885),
     zoom: 11.0,
   );
 
-  WeMapController mapController;
+  WeMapController? mapController;
   CameraPosition _position = _kInitialPosition;
   bool _isMoving = false;
   bool _compassEnabled = true;
@@ -49,8 +46,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _trafficEnabled = false;
   bool _satelliteEnabled = false;
   bool _customWMSLayerEnabled = false;
-  MyLocationTrackingMode _myLocationTrackingMode =
-      MyLocationTrackingMode.Tracking;
+  MyLocationTrackingMode _myLocationTrackingMode = MyLocationTrackingMode.Tracking;
 
   @override
   void initState() {
@@ -64,21 +60,19 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   void _extractMapInfo() {
-    _position = mapController.cameraPosition;
-    _isMoving = mapController.isCameraMoving;
+    _position = mapController!.cameraPosition!;
+    _isMoving = mapController!.isCameraMoving;
   }
 
   @override
   void dispose() {
-    mapController.removeListener(_onMapChanged);
+    mapController?.removeListener(_onMapChanged);
     super.dispose();
   }
 
   Widget _myLocationTrackingModeCycler() {
-    final MyLocationTrackingMode nextType = MyLocationTrackingMode.values[
-        (_myLocationTrackingMode.index + 1) %
-            MyLocationTrackingMode.values.length];
-    return FlatButton(
+    final MyLocationTrackingMode nextType = MyLocationTrackingMode.values[(_myLocationTrackingMode.index + 1) % MyLocationTrackingMode.values.length];
+    return TextButton(
       child: Text('change to $nextType'),
       onPressed: () {
         setState(() {
@@ -89,7 +83,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _compassToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_compassEnabled ? 'disable' : 'enable'} compasss'),
       onPressed: () {
         setState(() {
@@ -100,48 +94,40 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _latLngBoundsToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text(
-        _cameraTargetBounds.bounds == null
-            ? 'bound camera target'
-            : 'release camera target',
+        _cameraTargetBounds.bounds == null ? 'bound camera target' : 'release camera target',
       ),
       onPressed: () {
         setState(() {
-          _cameraTargetBounds = _cameraTargetBounds.bounds == null
-              ? CameraTargetBounds(hanoiBounds)
-              : CameraTargetBounds.unbounded;
+          _cameraTargetBounds = _cameraTargetBounds.bounds == null ? CameraTargetBounds(hanoiBounds) : CameraTargetBounds.unbounded;
         });
       },
     );
   }
 
   Widget _zoomBoundsToggler() {
-    return FlatButton(
-      child: Text(_minMaxZoomPreference.minZoom == null
-          ? 'bound zoom'
-          : 'release zoom'),
+    return TextButton(
+      child: Text(_minMaxZoomPreference.minZoom == null ? 'bound zoom' : 'release zoom'),
       onPressed: () {
         setState(() {
-          _minMaxZoomPreference = _minMaxZoomPreference.minZoom == null
-              ? const MinMaxZoomPreference(12.0, 16.0)
-              : MinMaxZoomPreference.unbounded;
+          _minMaxZoomPreference = _minMaxZoomPreference.minZoom == null ? const MinMaxZoomPreference(12.0, 16.0) : MinMaxZoomPreference.unbounded;
         });
       },
     );
   }
 
   Widget _setStyleToSatellite() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_satelliteEnabled ? 'Remove' : 'Add'} Satellite Layer'),
       onPressed: () {
         setState(() {
           if (_satelliteEnabled == false) {
             _satelliteEnabled = true;
-            mapController.addSatelliteLayer();
+            mapController?.addSatelliteLayer();
           } else {
             _satelliteEnabled = false;
-            mapController.removeSatelliteLayer();
+            mapController?.removeSatelliteLayer();
           }
         });
       },
@@ -149,16 +135,16 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _addTrafficLayer() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_trafficEnabled ? 'Remove' : 'Add'} Traffic Layer'),
       onPressed: () {
         setState(() {
           if (_trafficEnabled == false) {
             _trafficEnabled = true;
-            mapController.addTrafficLayer();
+            mapController?.addTrafficLayer();
           } else {
             _trafficEnabled = false;
-            mapController.removeTrafficLayer();
+            mapController?.removeTrafficLayer();
           }
         });
       },
@@ -166,20 +152,16 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _addCustomWMSLayer() {
-    return FlatButton(
-      child:
-          Text('${_customWMSLayerEnabled ? 'Remove' : 'Add'} Custom WMS Layer'),
+    return TextButton(
+      child: Text('${_customWMSLayerEnabled ? 'Remove' : 'Add'} Custom WMS Layer'),
       onPressed: () {
         setState(() {
           if (_customWMSLayerEnabled == false) {
             _customWMSLayerEnabled = true;
-            mapController.addWMSLayer(
-                "custom-layer",
-                "https://a.tile.opentopomap.org/{z}/{x}/{y}.png",
-                256);
+            mapController?.addWMSLayer("custom-layer", "https://a.tile.opentopomap.org/{z}/{x}/{y}.png", 256);
           } else {
             _customWMSLayerEnabled = false;
-            mapController.removeWMSLayer("custom-layer");
+            mapController?.removeWMSLayer("custom-layer");
           }
         });
       },
@@ -187,7 +169,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _rotateToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_rotateGesturesEnabled ? 'disable' : 'enable'} rotate'),
       onPressed: () {
         setState(() {
@@ -198,7 +180,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _scrollToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_scrollGesturesEnabled ? 'disable' : 'enable'} scroll'),
       onPressed: () {
         setState(() {
@@ -209,7 +191,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _tiltToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_tiltGesturesEnabled ? 'disable' : 'enable'} tilt'),
       onPressed: () {
         setState(() {
@@ -220,7 +202,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _zoomToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_zoomGesturesEnabled ? 'disable' : 'enable'} zoom'),
       onPressed: () {
         setState(() {
@@ -231,7 +213,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _myLocationToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_myLocationEnabled ? 'disable' : 'enable'} my location'),
       onPressed: () {
         setState(() {
@@ -242,7 +224,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _telemetryToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_telemetryEnabled ? 'disable' : 'enable'} telemetry'),
       onPressed: () {
         setState(() {
@@ -254,13 +236,12 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _visibleRegionGetter() {
-    return FlatButton(
+    return TextButton(
       child: Text('get currently visible region'),
       onPressed: () async {
-        var result = await mapController.getVisibleRegion();
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text(
-              "SW: ${result.southwest.toString()} NE: ${result.northeast.toString()}"),
+        var result = await mapController?.getVisibleRegion();
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("SW: ${result?.southwest.toString()} NE: ${result?.northeast.toString()}"),
         ));
       },
     );
@@ -293,13 +274,7 @@ class MapUiBodyState extends State<MapUiBody> {
     final List<Widget> columnChildren = <Widget>[
       Padding(
         padding: const EdgeInsets.all(10.0),
-        child: Center(
-          child: SizedBox(
-            width: 300.0,
-            height: 200.0,
-            child: weMap,
-          ),
-        ),
+        child: Center(child: SizedBox(width: 300.0, height: 200.0, child: weMap)),
       ),
     ];
 
@@ -309,9 +284,8 @@ class MapUiBodyState extends State<MapUiBody> {
           child: ListView(
             children: <Widget>[
               Text('camera bearing: ${_position.bearing}'),
-              Text(
-                  'camera target: ${_position.target.latitude.toStringAsFixed(4)},'
-                  '${_position.target.longitude.toStringAsFixed(4)}'),
+              Text('camera target: ${_position.target?.latitude.toStringAsFixed(4)},'
+                  '${_position.target?.longitude.toStringAsFixed(4)}'),
               Text('camera zoom: ${_position.zoom}'),
               Text('camera tilt: ${_position.tilt}'),
               Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),
@@ -343,10 +317,10 @@ class MapUiBodyState extends State<MapUiBody> {
 
   void onMapCreated(WeMapController controller) {
     mapController = controller;
-    mapController.addListener(_onMapChanged);
+    mapController?.addListener(_onMapChanged);
     _extractMapInfo();
 
-    mapController.getTelemetryEnabled().then((isEnabled) => setState(() {
+    mapController?.getTelemetryEnabled().then((isEnabled) => setState(() {
           _telemetryEnabled = isEnabled;
         }));
   }

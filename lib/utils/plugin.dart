@@ -52,7 +52,7 @@ String apiReverse(LatLng latLng) {
 String apiLocality(LatLng latLng) => "https://apis.wemap.asia/geocode-1/reverse?point.lat=${latLng.latitude}&point.lon=${latLng.longitude}&$key&layers=locality";
 
 ///Lookup SDK
-String apiLookup(int osmID) {
+String apiLookup(int? osmID) {
   Configuration.validateWeMapKey();
   return "https://apis.wemap.asia/we-tools/lookup?id=W$osmID&$key";
 }
